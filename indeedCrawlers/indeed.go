@@ -1,10 +1,10 @@
-package crawlers
+package indeedCrawlers
 
 import (
 	"encoding/csv"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"log"
+	"github.com/msyhu/GobbyIsntFree/etc"
 	"net/http"
 	"os"
 	"strconv"
@@ -13,9 +13,16 @@ import (
 
 var baseURL string = "https://kr.indeed.com/jobs?q=python&limit=50"
 
-type extractedJob = IndeedExtractedJob
+type ExtractedJob struct {
+	id       string
+	title    string
+	company  string
+	location string
+}
 
-func CrawlIndeed(indeedC chan<- []extractedJob) {
+type extractedJob = ExtractedJob
+
+func Crawling(indeedC chan<- []extractedJob) {
 	var jobs []extractedJob
 	c := make(chan []extractedJob)
 
@@ -38,13 +45,13 @@ func getPage(page int, mainC chan<- []extractedJob) {
 	pageURL := baseURL + "&start=" + strconv.Itoa(page*50)
 	fmt.Println(pageURL)
 	res, err := http.Get(pageURL)
-	checkErr(err)
-	checkCode(res)
+	etc.CheckErr(err)
+	etc.CheckCode(res)
 
 	defer res.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
-	checkErr(err)
+	etc.CheckErr(err)
 
 	searchCards := doc.Find(".jobsearch-SerpJobCard")
 
@@ -73,19 +80,19 @@ func extractJob(card *goquery.Selection, c chan<- extractedJob) {
 // csv로 저장
 func writeJobs(jobs []extractedJob) {
 	file, err := os.Create("jobs.csv")
-	checkErr(err)
+	etc.CheckErr(err)
 
 	w := csv.NewWriter(file)
 	defer w.Flush()
 
 	header := []string{"id", "title", "company", "location"}
 	wErr := w.Write(header)
-	checkErr(wErr)
+	etc.CheckErr(wErr)
 
 	for _, job := range jobs {
 		jobSlice := []string{job.id, job.title, job.company, job.location}
 		jwErr := w.Write(jobSlice)
-		checkErr(jwErr)
+		etc.CheckErr(jwErr)
 	}
 }
 
@@ -96,29 +103,17 @@ func cleanString(str string) string {
 func getPages() int {
 	pages := 0
 	res, err := http.Get(baseURL)
-	checkErr(err)
-	checkCode(res)
+	etc.CheckErr(err)
+	etc.CheckCode(res)
 
 	defer res.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
-	checkErr(err)
+	etc.CheckErr(err)
 
 	doc.Find(".pagination").Each(func(i int, s *goquery.Selection) {
 		pages = s.Find("a").Length()
 	})
 
 	return pages
-}
-
-func checkErr(err error) {
-	if err != nil {
-		log.Fatalln(err)
-	}
-}
-
-func checkCode(res *http.Response) {
-	if res.StatusCode != 200 {
-		log.Fatalln("Request failed with Status:", res.StatusCode)
-	}
 }

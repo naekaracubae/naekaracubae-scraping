@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/msyhu/GobbyIsntFree/crawlers"
+	"github.com/msyhu/GobbyIsntFree/indeedCrawlers"
 )
 
-type extractedJob = crawlers.IndeedExtractedJob
+type extractedJob = indeedCrawlers.ExtractedJob
 
 func main() {
 	indeedC := make(chan []extractedJob)
-	go crawlers.CrawlIndeed(indeedC)
+	go indeedCrawlers.Crawling(indeedC)
 	indeedJobs := <-indeedC
 	for _, indeedJob := range indeedJobs {
 		fmt.Println(indeedJob)
