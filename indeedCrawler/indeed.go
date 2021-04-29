@@ -1,4 +1,4 @@
-package indeedCrawlers
+package indeedCrawler
 
 import (
 	"encoding/csv"

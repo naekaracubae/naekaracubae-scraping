@@ -12,3 +12,8 @@ func TestGetPages(t *testing.T) {
 		t.Error("Wrong result", pages)
 	}
 }
+
+func TestGetPage(t *testing.T) {
+	kakaoCrawler.GetPage(1)
+
+}
