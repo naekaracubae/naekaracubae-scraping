@@ -6,6 +6,7 @@ import (
 	"github.com/msyhu/GobbyIsntFree/etc"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 var baseURL string = "https://careers.kakao.com/jobs?part=TECHNOLOGY&company=ALL"
@@ -26,22 +27,24 @@ func Crawling(kakaoC chan<- []extractedJob) {
 	c := make(chan []extractedJob)
 
 	totalPages := GetPages()
-	for i := 0; i < totalPages; i++ {
+	fmt.Println("total!!, ", totalPages)
+	for i := 1; i <= totalPages; i++ {
 		go GetPage(i, c)
 	}
 
+	// TODO : waitgroup 이용해서 refactoring 해보기
 	for i := 0; i < totalPages; i++ {
 		extractedJobs := <-c
+		fmt.Println(extractedJobs)
 		jobs = append(jobs, extractedJobs...)
 	}
 
-	kakaoC <- jobs
+	//kakaoC <- jobs
 }
 
-// TODO : 페이지 끝까지 가서 가져와야 함.
 // 페이지 수를 가져온다
 func GetPages() int {
-	pages := 0
+	//lastPage := 1
 	res, err := http.Get(baseURL)
 	etc.CheckErr(err)
 	etc.CheckCode(res)
@@ -51,12 +54,14 @@ func GetPages() int {
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	etc.CheckErr(err)
 
-	doc.Find(".paging_list").Each(func(i int, s *goquery.Selection) {
-		pages = s.Find("a").Length()
-	})
+	pageSelection := doc.Find(".paging_list").Find("a")
+	lastPageHref, _ := pageSelection.Last().Attr("href")
+	lastPage := strings.Split(lastPageHref, "=")[1]
+	page, err := strconv.Atoi(lastPage)
+	etc.CheckErr(err)
 
 	// 양쪽 화살표 4개 빼주고 현재 페이지 1 더해줌
-	return pages - 4 + 1
+	return page
 }
 
 // 하나의 페이지에서 직무를 가져와서 하나씩 채널로 넘겨준다.
@@ -121,6 +126,8 @@ func extractJob(card *goquery.Selection, c chan<- extractedJob) {
 	})
 	company := companyAndJobType[0]
 	jobType := companyAndJobType[1]
+
+	//fmt.Println(company)
 
 	c <- extractedJob{title, endDate, location, jobGroups, company, jobType}
 

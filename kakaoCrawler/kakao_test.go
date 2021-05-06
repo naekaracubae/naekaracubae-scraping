@@ -11,7 +11,7 @@ type extractedJob = kakaoCrawler.ExtractedJob
 func TestGetPages(t *testing.T) {
 	pages := kakaoCrawler.GetPages()
 
-	if pages != 7 {
+	if pages != 14 {
 		t.Error("Wrong result", pages)
 	}
 }
@@ -27,7 +27,7 @@ func TestCrawling(t *testing.T) {
 	c := make(chan []extractedJob)
 
 	totalPages := kakaoCrawler.GetPages()
-	for i := 0; i < totalPages; i++ {
+	for i := 1; i <= totalPages; i++ {
 		go kakaoCrawler.GetPage(i, c)
 	}
 

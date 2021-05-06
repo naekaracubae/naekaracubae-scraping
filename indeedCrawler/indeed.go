@@ -33,10 +33,11 @@ func Crawling(indeedC chan<- []extractedJob) {
 
 	for i := 0; i < totalPages; i++ {
 		extractedJobs := <-c
+		fmt.Println(extractedJobs)
 		jobs = append(jobs, extractedJobs...)
 	}
 
-	indeedC <- jobs
+	//indeedC <- jobs
 }
 
 func getPage(page int, mainC chan<- []extractedJob) {
@@ -73,6 +74,9 @@ func extractJob(card *goquery.Selection, c chan<- extractedJob) {
 	title := cleanString(card.Find(".title>a").Text())
 	company := cleanString(card.Find(".sjcl>div>span").Text())
 	location := cleanString(card.Find(".sjcl").Text())
+
+	//fmt.Println(company)
+
 	c <- extractedJob{id, title, company, location}
 
 }
