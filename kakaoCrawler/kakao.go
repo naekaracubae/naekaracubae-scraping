@@ -12,12 +12,12 @@ import (
 var baseURL string = "https://careers.kakao.com/jobs?part=TECHNOLOGY&company=ALL"
 
 type ExtractedJob struct {
-	title     string
-	endDate   string
-	location  string
-	jobGroups []string
-	company   string
-	jobType   string
+	Title     string   `json:"Title"`
+	EndDate   string   `json:"EndDate"`
+	Location  string   `json:"Location"`
+	JobGroups []string `json:"JobGroups"`
+	Company   string   `json:"Company"`
+	JobType   string   `json:"JobType"`
 }
 
 type extractedJob = ExtractedJob
@@ -27,7 +27,7 @@ func Crawling(kakaoC chan<- []extractedJob) {
 	c := make(chan []extractedJob)
 
 	totalPages := GetPages()
-	fmt.Println("total!!, ", totalPages)
+
 	for i := 1; i <= totalPages; i++ {
 		go GetPage(i, c)
 	}
@@ -35,11 +35,10 @@ func Crawling(kakaoC chan<- []extractedJob) {
 	// TODO : waitgroup 이용해서 refactoring 해보기
 	for i := 0; i < totalPages; i++ {
 		extractedJobs := <-c
-		fmt.Println(extractedJobs)
 		jobs = append(jobs, extractedJobs...)
 	}
 
-	//kakaoC <- jobs
+	kakaoC <- jobs
 }
 
 // 페이지 수를 가져온다
@@ -129,6 +128,6 @@ func extractJob(card *goquery.Selection, c chan<- extractedJob) {
 
 	//fmt.Println(company)
 
-	c <- extractedJob{title, endDate, location, jobGroups, company, jobType}
+	c <- extractedJob{Title: title, EndDate: endDate, Location: location, JobGroups: jobGroups, Company: company, JobType: jobType}
 
 }
