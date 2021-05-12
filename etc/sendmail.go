@@ -14,12 +14,12 @@ type User struct {
 }
 
 func SendMail(contents string) {
-	userJson, err := ioutil.ReadFile("./secrets/sendmail.json") // articles.json 파일의 내용을 읽어서 바이트 슬라이스에 저장
+	userJson, err := ioutil.ReadFile("../secrets/sendmail.json") // articles.json 파일의 내용을 읽어서 바이트 슬라이스에 저장
 	CheckErr(err)
 	var user User
 	json.Unmarshal(userJson, &user)
 
-	subscribersJson, err := ioutil.ReadFile("./secrets/subscribers.json") // articles.json 파일의 내용을 읽어서 바이트 슬라이스에 저장
+	subscribersJson, err := ioutil.ReadFile("../secrets/subscribers.json") // articles.json 파일의 내용을 읽어서 바이트 슬라이스에 저장
 	CheckErr(err)
 	var subscribers []User
 	json.Unmarshal(subscribersJson, &subscribers)
@@ -33,7 +33,8 @@ func SendMail(contents string) {
 	}
 	m.SetHeader("To", subscribersEmail...)
 
-	m.SetHeader("Subject", "Today's Kakao")
+	// TODO : 사용자별로 이름 넣어주기
+	m.SetHeader("Subject", "Today's Kakao👶")
 	m.SetBody("text/html", contents)
 
 	d := gomail.NewDialer("smtp.kakao.com", 465, user.Email, user.Password)
