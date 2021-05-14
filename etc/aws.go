@@ -22,7 +22,7 @@ func MakeConnection() {
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 
-	fmt.Println(sess)
+	fmt.Println("sess?", sess)
 
 	creds := credentials.NewEnvCredentials()
 
