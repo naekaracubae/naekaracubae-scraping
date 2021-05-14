@@ -13,7 +13,6 @@ type kakaoExtractedJob = kakaoCrawler.ExtractedJob
 
 func main() {
 
-	// lambda.Start(startCrawling)
 	startCrawling()
 }
 
@@ -23,6 +22,7 @@ func startCrawling() {
 	kakaoJobs := <-kakaoC
 	fmt.Println(kakaoJobs)
 
+	// 모듈화
 	var contents strings.Builder
 	for idx, kakaoJob := range kakaoJobs {
 		jsonBytes, err := json.Marshal(kakaoJob)
@@ -33,5 +33,6 @@ func startCrawling() {
 		contents.WriteString("</br>")
 	}
 
-	etc.SendMail(contents.String())
+	subscribers := etc.GetSubscribers()
+	etc.SendMail(contents.String(), subscribers)
 }

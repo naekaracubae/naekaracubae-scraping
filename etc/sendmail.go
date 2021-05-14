@@ -1,34 +1,88 @@
 package etc
 
 import (
-	"gopkg.in/gomail.v2"
-	"strconv"
+	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ses"
 )
 
-func SendMail(contents string) {
+const (
+	// Replace sender@example.com with your "From" address.
+	// This address must be verified with Amazon SES.
+	SenderTemp = "noreply@msyhu.com"
 
-	sender := GetSenders()
-	subscribers := GetSubscribers()
+	// The subject line for the email.
+	Subject = "오늘의 채용정보입니다👶"
 
-	m := gomail.NewMessage()
-	m.SetHeader("From", sender.Email)
-	m.SetBody("text/html", contents)
-	intPort, err := strconv.Atoi(sender.Port)
-	CheckErr(err)
+	// The character encoding for the email.
+	CharSet = "UTF-8"
+)
 
-	d := gomail.NewDialer(sender.Host, intPort, sender.Email, sender.Password)
-	if _, err := d.Dial(); err != nil {
-		panic(err)
-	}
+func SendMail(contents string, subscribers []Subscriber) {
 
+	// Create a new session in the us-west-2 region.
+	// Replace us-west-2 with the AWS Region you're using for Amazon SES.
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String("ap-northeast-2")},
+	)
+
+	// Create an SES session.
+	svc := ses.New(sess)
+
+	var toAddresses []*string
 	for _, subscriber := range subscribers {
-		m.SetHeader("To", subscriber.Email)
-		subject := subscriber.Name + " 님 ! 오늘의 채용정보입니다👶"
-		m.SetHeader("Subject", subject)
-
-		if err := d.DialAndSend(m); err != nil {
-			panic(err)
-		}
+		toAddresses = append(toAddresses, &subscriber.Email)
 	}
+	// Assemble the email.
+	input := &ses.SendEmailInput{
+		Destination: &ses.Destination{
+			CcAddresses: []*string{},
+			ToAddresses: toAddresses,
+		},
+		Message: &ses.Message{
+			Body: &ses.Body{
+				Text: &ses.Content{
+					Charset: aws.String(CharSet),
+					Data:    aws.String(contents),
+				},
+			},
+			Subject: &ses.Content{
+				Charset: aws.String(CharSet),
+				Data:    aws.String(Subject),
+			},
+		},
+		Source: aws.String(SenderTemp),
+		// Uncomment to use a configuration set
+		//ConfigurationSetName: aws.String(ConfigurationSet),
+	}
+
+	// Attempt to send the email.
+	result, err := svc.SendEmail(input)
+
+	// Display error messages if they occur.
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case ses.ErrCodeMessageRejected:
+				fmt.Println(ses.ErrCodeMessageRejected, aerr.Error())
+			case ses.ErrCodeMailFromDomainNotVerifiedException:
+				fmt.Println(ses.ErrCodeMailFromDomainNotVerifiedException, aerr.Error())
+			case ses.ErrCodeConfigurationSetDoesNotExistException:
+				fmt.Println(ses.ErrCodeConfigurationSetDoesNotExistException, aerr.Error())
+			default:
+				fmt.Println(aerr.Error())
+			}
+		} else {
+			// Print the error, cast err to awserr.Error to get the Code and
+			// Message from an error.
+			fmt.Println(err.Error())
+		}
+
+		return
+	}
+
+	fmt.Println(result)
 
 }

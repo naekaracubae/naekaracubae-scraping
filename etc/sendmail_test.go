@@ -6,5 +6,5 @@ import (
 )
 
 func TestSendmail(t *testing.T) {
-	etc.SendMail("hello world")
+	etc.SendMail("hello world", nil)
 }
