@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/msyhu/GobbyIsntFree/etc"
 	"github.com/msyhu/GobbyIsntFree/kakaoCrawler"
 	"strconv"
@@ -13,7 +12,9 @@ import (
 type kakaoExtractedJob = kakaoCrawler.ExtractedJob
 
 func main() {
-	lambda.Start(startCrawling)
+
+	// lambda.Start(startCrawling)
+	startCrawling()
 }
 
 func startCrawling() {

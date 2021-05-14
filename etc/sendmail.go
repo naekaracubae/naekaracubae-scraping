@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"gopkg.in/gomail.v2"
 	"io/ioutil"
+	"log"
+	"path/filepath"
 )
 
 type User struct {
@@ -14,12 +16,21 @@ type User struct {
 }
 
 func SendMail(contents string) {
-	userJson, err := ioutil.ReadFile("./secrets/sendmail.json") // articles.json 파일의 내용을 읽어서 바이트 슬라이스에 저장
+	dir, err := filepath.Abs(filepath.Dir("./secrets/"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("realpath : ", dir)
+
+	// TODO : GetSenders() 로 aws RDS 에서 불러오기
+	userJson, err := ioutil.ReadFile(filepath.Join(dir, "sendmail.json")) // articles.json 파일의 내용을 읽어서 바이트 슬라이스에 저장
 	CheckErr(err)
 	var user User
 	json.Unmarshal(userJson, &user)
 
-	subscribersJson, err := ioutil.ReadFile("./secrets/subscribers.json") // articles.json 파일의 내용을 읽어서 바이트 슬라이스에 저장
+	// TODO : GetSubscribers() 로 aws RDS 에서 불러오기
+	subscribersJson, err := ioutil.ReadFile(filepath.Join(dir, "subscribers.json")) // articles.json 파일의 내용을 읽어서 바이트 슬라이스에 저장
 	CheckErr(err)
 	var subscribers []User
 	json.Unmarshal(subscribersJson, &subscribers)
