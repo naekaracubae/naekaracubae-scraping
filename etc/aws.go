@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/rds/rdsutils"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -17,7 +18,14 @@ func MakeConnection() {
 	dbEndpoint := fmt.Sprintf("%s:%d", dbHost, dbPort)
 	region := "ap-northeast-2"
 
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+
+	fmt.Println(sess)
+
 	creds := credentials.NewEnvCredentials()
+
 	//credValue, err := creds.Get()
 	//if err != nil {
 	//	panic(err.Error())
