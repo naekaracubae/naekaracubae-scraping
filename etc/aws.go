@@ -1,55 +1,39 @@
 package etc
 
 import (
-	"database/sql"
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/rds/rdsutils"
+	"github.com/aws/aws-sdk-go/service/rdsdataservice"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func MakeConnection() {
-	dbName := "gobbyisntfree"
-	dbUser := "msyhu"
-	dbHost := "gobbyisntfree.ccttcm80dlu1.ap-northeast-2.rds.amazonaws.com"
-	dbPort := 3306
-	dbEndpoint := fmt.Sprintf("%s:%d", dbHost, dbPort)
-	region := "ap-northeast-2"
-
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-
-	fmt.Println("sess?", sess)
-
-	creds := credentials.NewEnvCredentials()
-
-	//credValue, err := creds.Get()
-	//if err != nil {
-	//	panic(err.Error())
-	//}
-
-	//fmt.Printf("%+v", credValue)
-
-	authToken, err := rdsutils.BuildAuthToken(dbEndpoint, region, dbUser, creds)
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String("ap-northeast-2"),
+	})
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?tls=true&allowCleartextPasswords=true",
-		dbUser, authToken, dbEndpoint, dbName,
-	)
+	SQLStatement := `SELECT * FROM subscribers;`
 
-	db, err := sql.Open("mysql", dsn)
-	if err != nil {
-		panic(err)
-	}
+	rdsdataservice_client := rdsdataservice.New(sess)
+	req, resp := rdsdataservice_client.ExecuteStatementRequest(&rdsdataservice.ExecuteStatementInput{
+		Database:    aws.String("gobbyisntfree"),
+		ResourceArn: aws.String("arn:aws:rds:ap-northeast-2:685320160057:db:gobbyisntfree"),
+		//SecretArn:   aws.String("arn:aws:secretsmanager:us-east-2:9xxxxxxxx9:secret:RDS_Credentials-IZOXv0"),
+		Sql: aws.String(SQLStatement),
+	})
 
-	err = db.Ping()
-	if err != nil {
-		panic(err)
+	err1 := req.Send()
+	if err1 == nil { // resp is now filled
+		fmt.Println("Response:", resp)
+	} else {
+		fmt.Println("error:", err1)
 	}
 }
 
