@@ -1,40 +1,49 @@
 package etc
 
 import (
+	"database/sql"
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/rdsdataservice"
-	"os"
-
 	_ "github.com/go-sql-driver/mysql"
 )
 
+const (
+	host     = "gobbyisntfree.ccttcm80dlu1.ap-northeast-2.rds.amazonaws.com"
+	database = "GobbyIsntFree"
+	user     = ""
+	password = ""
+)
+
 func MakeConnection() {
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("ap-northeast-2"),
-	})
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
+	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true", user, password, host, database)
+
+	// Initialize connection object.
+	db, err := sql.Open("mysql", connectionString)
+	CheckErr(err)
+	defer db.Close()
+
+	err = db.Ping()
+	CheckErr(err)
+	fmt.Println("Successfully created connection to database.")
+
+	var (
+		name  string
+		email string
+	)
+
+	rows, err := db.Query("SELECT name, email from subscribers;")
+	CheckErr(err)
+	defer rows.Close()
+	fmt.Println("Reading data:")
+	for rows.Next() {
+		err := rows.Scan(&name, &email)
+		CheckErr(err)
+		fmt.Printf("Data row = (%s, %s)\n", name, email)
 	}
 
-	SQLStatement := `SELECT * FROM subscribers;`
+	err = rows.Err()
+	CheckErr(err)
+	fmt.Println("Done.")
 
-	rdsdataservice_client := rdsdataservice.New(sess)
-	req, resp := rdsdataservice_client.ExecuteStatementRequest(&rdsdataservice.ExecuteStatementInput{
-		Database:    aws.String("gobbyisntfree"),
-		ResourceArn: aws.String("arn:aws:rds:ap-northeast-2:685320160057:db:gobbyisntfree"),
-		//SecretArn:   aws.String("arn:aws:secretsmanager:us-east-2:9xxxxxxxx9:secret:RDS_Credentials-IZOXv0"),
-		Sql: aws.String(SQLStatement),
-	})
-
-	err1 := req.Send()
-	if err1 == nil { // resp is now filled
-		fmt.Println("Response:", resp)
-	} else {
-		fmt.Println("error:", err1)
-	}
 }
 
 func GetSubscribers() {
