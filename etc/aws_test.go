@@ -1,6 +1,7 @@
 package etc_test
 
 import (
+	"fmt"
 	"github.com/msyhu/GobbyIsntFree/etc"
 	"testing"
 )
@@ -10,5 +11,6 @@ func TestGetSubscribers(t *testing.T) {
 }
 
 func TestGetSenders(t *testing.T) {
-	etc.GetSenders()
+	sender := etc.GetSenders()
+	fmt.Println(sender)
 }

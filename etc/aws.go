@@ -24,6 +24,13 @@ type Subscriber struct {
 	Email string `json:"email"`
 }
 
+type Sender struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Host     string `json:"host"`
+	Port     string `json:"port"`
+}
+
 func getSecret() *SecretManager {
 	secretName := "GOBBY_RDS_SECRETS"
 	region := "ap-northeast-2"
@@ -97,7 +104,6 @@ func getSecret() *SecretManager {
 
 func GetSubscribers() []Subscriber {
 	gobbyRdsSecret := getSecret()
-	fmt.Println(gobbyRdsSecret)
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
 		gobbyRdsSecret.User,
@@ -131,12 +137,41 @@ func GetSubscribers() []Subscriber {
 		subscribers = append(subscribers, subscriber)
 	}
 
-	fmt.Println(subscribers)
-	fmt.Println("Done.")
-
 	return subscribers
 }
 
-func GetSenders() {
+func GetSenders() Sender {
+	gobbyRdsSecret := getSecret()
 
+	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
+		gobbyRdsSecret.User,
+		gobbyRdsSecret.Password,
+		gobbyRdsSecret.Host,
+		gobbyRdsSecret.Database)
+
+	// Initialize connection object.
+	db, err := sql.Open("mysql", connectionString)
+	CheckErr(err)
+	defer db.Close()
+
+	err = db.Ping()
+	CheckErr(err)
+	fmt.Println("Successfully created connection to database.")
+
+	// TODO : 쿼리도 암호화 해야하나?
+	rows, err := db.Query("SELECT email, password, host, port from sendaccounts;")
+	CheckErr(err)
+	defer rows.Close()
+	fmt.Println("Reading data:")
+
+	err = rows.Err()
+	CheckErr(err)
+
+	sender := Sender{}
+	for rows.Next() {
+		err := rows.Scan(&sender.Email, &sender.Password, &sender.Host, &sender.Port)
+		CheckErr(err)
+	}
+
+	return sender
 }
