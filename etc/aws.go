@@ -1,6 +1,7 @@
 package etc
 
 import (
+	"database/sql"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -16,6 +17,11 @@ type SecretManager struct {
 	Password string `json:"password"`
 	Host     string `json:"host"`
 	Database string `json:"database"`
+}
+
+type Subscriber struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
 func getSecret() *SecretManager {
@@ -88,14 +94,47 @@ func getSecret() *SecretManager {
 	return &gobbyRdsSecret
 
 }
-func MakeConnection() {
+
+func GetSubscribers() []Subscriber {
 	gobbyRdsSecret := getSecret()
 	fmt.Println(gobbyRdsSecret)
 
-}
+	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
+		gobbyRdsSecret.User,
+		gobbyRdsSecret.Password,
+		gobbyRdsSecret.Host,
+		gobbyRdsSecret.Database)
 
-func GetSubscribers() {
+	// Initialize connection object.
+	db, err := sql.Open("mysql", connectionString)
+	CheckErr(err)
+	defer db.Close()
 
+	err = db.Ping()
+	CheckErr(err)
+	fmt.Println("Successfully created connection to database.")
+
+	// TODO : 쿼리도 암호화 해야하나?
+	rows, err := db.Query("SELECT name, email from subscribers;")
+	CheckErr(err)
+	defer rows.Close()
+	fmt.Println("Reading data:")
+	var subscribers []Subscriber
+
+	err = rows.Err()
+	CheckErr(err)
+
+	for rows.Next() {
+		subscriber := Subscriber{}
+		err := rows.Scan(&subscriber.Name, &subscriber.Email)
+		CheckErr(err)
+		subscribers = append(subscribers, subscriber)
+	}
+
+	fmt.Println(subscribers)
+	fmt.Println("Done.")
+
+	return subscribers
 }
 
 func GetSenders() {

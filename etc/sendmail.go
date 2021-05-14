@@ -16,7 +16,7 @@ type User struct {
 }
 
 func SendMail(contents string) {
-	dir, err := filepath.Abs(filepath.Dir("./secrets/"))
+	dir, err := filepath.Abs(filepath.Dir("../secrets/"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,12 +29,7 @@ func SendMail(contents string) {
 	var user User
 	json.Unmarshal(userJson, &user)
 
-	// TODO : GetSubscribers() 로 aws RDS 에서 불러오기
-	subscribersJson, err := ioutil.ReadFile(filepath.Join(dir, "subscribers.json")) // articles.json 파일의 내용을 읽어서 바이트 슬라이스에 저장
-	CheckErr(err)
-	var subscribers []User
-	json.Unmarshal(subscribersJson, &subscribers)
-	fmt.Println(subscribers)
+	subscribers := GetSubscribers()
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", user.Email)

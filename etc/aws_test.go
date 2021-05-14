@@ -12,7 +12,3 @@ func TestGetSubscribers(t *testing.T) {
 func TestGetSenders(t *testing.T) {
 	etc.GetSenders()
 }
-
-func TestMakeConnection(t *testing.T) {
-	etc.MakeConnection()
-}
