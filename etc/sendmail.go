@@ -11,7 +11,7 @@ import (
 const (
 	// Replace sender@example.com with your "From" address.
 	// This address must be verified with Amazon SES.
-	SenderTemp = "noreply@msyhu.com"
+	Sender = "noreply@msyhu.com"
 
 	// The subject line for the email.
 	Subject = "오늘의 채용정보입니다👶"
@@ -53,7 +53,7 @@ func SendMail(contents string, subscribers []Subscriber) {
 				Data:    aws.String(Subject),
 			},
 		},
-		Source: aws.String(SenderTemp),
+		Source: aws.String(Sender),
 		// Uncomment to use a configuration set
 		//ConfigurationSetName: aws.String(ConfigurationSet),
 	}
