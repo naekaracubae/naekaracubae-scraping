@@ -1,4 +1,4 @@
-package kakaoCrawler
+package jobscrapper
 
 import (
 	"fmt"
@@ -10,33 +10,33 @@ import (
 	"strings"
 )
 
-var baseURL string = "https://careers.kakao.com/jobs?part=TECHNOLOGY&company=ALL"
+var kakaobaseURL string = "https://careers.kakao.com/jobs?part=TECHNOLOGY&company=ALL"
 
-type extractedJob = _struct.Kakao
+type kakaoJob = _struct.Kakao
 
-func Crawling(kakaoC chan<- []extractedJob) {
-	var jobs []extractedJob
-	c := make(chan []extractedJob)
+func KakaoCrawling(kakaoC chan<- []kakaoJob) {
+	var jobs []kakaoJob
+	c := make(chan []kakaoJob)
 
-	totalPages := GetPages()
+	totalPages := KakaoGetPages()
 
 	for i := 1; i <= totalPages; i++ {
-		go GetPage(i, c)
+		go KakaoGetPage(i, c)
 	}
 
 	// TODO : waitgroup 이용해서 refactoring 해보기
 	for i := 0; i < totalPages; i++ {
-		extractedJobs := <-c
-		jobs = append(jobs, extractedJobs...)
+		kakaoJobs := <-c
+		jobs = append(jobs, kakaoJobs...)
 	}
 
 	kakaoC <- jobs
 }
 
 // 페이지 수를 가져온다
-func GetPages() int {
+func KakaoGetPages() int {
 	//lastPage := 1
-	res, err := http.Get(baseURL)
+	res, err := http.Get(kakaobaseURL)
 	etc.CheckErr(err)
 	etc.CheckCode(res)
 
@@ -56,10 +56,10 @@ func GetPages() int {
 }
 
 // 하나의 페이지에서 직무를 가져와서 하나씩 채널로 넘겨준다.
-func GetPage(page int, mainC chan<- []extractedJob) {
-	var jobs []extractedJob
-	c := make(chan extractedJob)
-	pageURL := baseURL + "&page=" + strconv.Itoa(page)
+func KakaoGetPage(page int, mainC chan<- []kakaoJob) {
+	var jobs []kakaoJob
+	c := make(chan kakaoJob)
+	pageURL := kakaobaseURL + "&page=" + strconv.Itoa(page)
 	fmt.Println(pageURL)
 	res, err := http.Get(pageURL)
 	etc.CheckErr(err)
@@ -73,7 +73,7 @@ func GetPage(page int, mainC chan<- []extractedJob) {
 	searchCards := doc.Find(".list_jobs>li")
 
 	searchCards.Each(func(i int, card *goquery.Selection) {
-		go extractJob(card, c)
+		go KakaoExtractJob(card, c)
 	})
 
 	for i := 0; i < searchCards.Length(); i++ {
@@ -85,7 +85,7 @@ func GetPage(page int, mainC chan<- []extractedJob) {
 
 }
 
-func extractJob(card *goquery.Selection, c chan<- extractedJob) {
+func KakaoExtractJob(card *goquery.Selection, c chan<- kakaoJob) {
 	// title
 	title := card.Find(".tit_jobs").Text()
 
@@ -120,6 +120,6 @@ func extractJob(card *goquery.Selection, c chan<- extractedJob) {
 
 	//fmt.Println(company)
 
-	c <- extractedJob{Title: title, EndDate: endDate, Location: location, JobGroups: jobGroups, Company: company, JobType: jobType}
+	c <- kakaoJob{Title: title, EndDate: endDate, Location: location, JobGroups: jobGroups, Company: company, JobType: jobType}
 
 }

@@ -8,3 +8,10 @@ type Kakao struct {
 	Company   string   `json:"Company"`
 	JobType   string   `json:"JobType"`
 }
+
+type Indeed struct {
+	Id       string
+	Title    string
+	Company  string
+	Location string
+}

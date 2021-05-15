@@ -1,15 +1,15 @@
-package kakaoCrawler_test
+package jobscrapper_test
 
 import (
 	"fmt"
-	"github.com/msyhu/GobbyIsntFree/kakaoCrawler"
+	"github.com/msyhu/GobbyIsntFree/jobscrapper"
 	"testing"
 )
 
-type extractedJob = kakaoCrawler.ExtractedJob
+type extractedJob = jobscrapper.ExtractedJob
 
 func TestGetPages(t *testing.T) {
-	pages := kakaoCrawler.GetPages()
+	pages := jobscrapper.GetPages()
 
 	if pages != 14 {
 		t.Error("Wrong result", pages)
@@ -18,7 +18,7 @@ func TestGetPages(t *testing.T) {
 
 func TestGetPage(t *testing.T) {
 	c := make(chan []extractedJob)
-	kakaoCrawler.GetPage(1, c)
+	jobscrapper.GetPage(1, c)
 
 }
 
@@ -26,9 +26,9 @@ func TestCrawling(t *testing.T) {
 	var jobs []extractedJob
 	c := make(chan []extractedJob)
 
-	totalPages := kakaoCrawler.GetPages()
+	totalPages := jobscrapper.GetPages()
 	for i := 1; i <= totalPages; i++ {
-		go kakaoCrawler.GetPage(i, c)
+		go jobscrapper.GetPage(i, c)
 	}
 
 	for i := 0; i < totalPages; i++ {
