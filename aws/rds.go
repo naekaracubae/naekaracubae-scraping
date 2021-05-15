@@ -1,4 +1,4 @@
-package etc
+package aws
 
 import (
 	"database/sql"
@@ -10,21 +10,11 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/msyhu/GobbyIsntFree/etc"
+	_struct "github.com/msyhu/GobbyIsntFree/struct"
 )
 
-type SecretManager struct {
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Host     string `json:"host"`
-	Database string `json:"database"`
-}
-
-type Subscriber struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-}
-
-func getSecret() *SecretManager {
+func getSecret() *_struct.SecretManager {
 	secretName := "GOBBY_RDS_SECRETS"
 	region := "ap-northeast-2"
 
@@ -87,15 +77,15 @@ func getSecret() *SecretManager {
 	}
 
 	// Your code goes here.
-	var gobbyRdsSecret = SecretManager{}
+	var gobbyRdsSecret = _struct.SecretManager{}
 	jsonErr := json.Unmarshal([]byte(secretString), &gobbyRdsSecret)
-	CheckErr(jsonErr)
+	etc.CheckErr(jsonErr)
 
 	return &gobbyRdsSecret
 
 }
 
-func GetSubscribers() []Subscriber {
+func GetSubscribers() []_struct.Subscriber {
 	gobbyRdsSecret := getSecret()
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
@@ -106,27 +96,27 @@ func GetSubscribers() []Subscriber {
 
 	// Initialize connection object.
 	db, err := sql.Open("mysql", connectionString)
-	CheckErr(err)
+	etc.CheckErr(err)
 	defer db.Close()
 
 	err = db.Ping()
-	CheckErr(err)
+	etc.CheckErr(err)
 	fmt.Println("Successfully created connection to database.")
 
 	// TODO : 쿼리도 암호화 해야하나?
 	rows, err := db.Query("SELECT name, email from subscribers;")
-	CheckErr(err)
+	etc.CheckErr(err)
 	defer rows.Close()
 	fmt.Println("Reading data:")
-	var subscribers []Subscriber
+	var subscribers []_struct.Subscriber
 
 	err = rows.Err()
-	CheckErr(err)
+	etc.CheckErr(err)
 
 	for rows.Next() {
-		subscriber := Subscriber{}
+		subscriber := _struct.Subscriber{}
 		err := rows.Scan(&subscriber.Name, &subscriber.Email)
-		CheckErr(err)
+		etc.CheckErr(err)
 		subscribers = append(subscribers, subscriber)
 	}
 

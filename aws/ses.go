@@ -1,4 +1,4 @@
-package etc
+package aws
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
+	_struct "github.com/msyhu/GobbyIsntFree/struct"
 )
 
 const (
@@ -20,7 +21,7 @@ const (
 	CharSet = "UTF-8"
 )
 
-func SendMail(contents string, subscribers []Subscriber) {
+func SendMail(contents string, subscribers []_struct.Subscriber) {
 
 	// Create a new session in the us-west-2 region.
 	// Replace us-west-2 with the AWS Region you're using for Amazon SES.

@@ -1,38 +1,24 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"github.com/msyhu/GobbyIsntFree/aws"
 	"github.com/msyhu/GobbyIsntFree/etc"
 	"github.com/msyhu/GobbyIsntFree/kakaoCrawler"
-	"strconv"
-	"strings"
+	_struct "github.com/msyhu/GobbyIsntFree/struct"
 )
 
-type kakaoExtractedJob = kakaoCrawler.ExtractedJob
+type kakaoExtractedJob = _struct.Kakao
 
 func main() {
-
-	startCrawling()
+	start()
 }
 
-func startCrawling() {
+func start() {
 	kakaoC := make(chan []kakaoExtractedJob)
 	go kakaoCrawler.Crawling(kakaoC)
 	kakaoJobs := <-kakaoC
-	fmt.Println(kakaoJobs)
 
-	// 모듈화
-	var contents strings.Builder
-	for idx, kakaoJob := range kakaoJobs {
-		jsonBytes, err := json.Marshal(kakaoJob)
-		etc.CheckErr(err)
-		jsonString := string(jsonBytes)
-		idxString := strconv.Itoa(idx) + ". " + jsonString
-		contents.WriteString(idxString)
-		contents.WriteString("</br>")
-	}
-
-	subscribers := etc.GetSubscribers()
-	etc.SendMail(contents.String(), subscribers)
+	contents := etc.StructToStr(&kakaoJobs)
+	subscribers := aws.GetSubscribers()
+	aws.SendMail(contents, subscribers)
 }

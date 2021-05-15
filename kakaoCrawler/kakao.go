@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/msyhu/GobbyIsntFree/etc"
+	_struct "github.com/msyhu/GobbyIsntFree/struct"
 	"net/http"
 	"strconv"
 	"strings"
@@ -11,16 +12,7 @@ import (
 
 var baseURL string = "https://careers.kakao.com/jobs?part=TECHNOLOGY&company=ALL"
 
-type ExtractedJob struct {
-	Title     string   `json:"Title"`
-	EndDate   string   `json:"EndDate"`
-	Location  string   `json:"Location"`
-	JobGroups []string `json:"JobGroups"`
-	Company   string   `json:"Company"`
-	JobType   string   `json:"JobType"`
-}
-
-type extractedJob = ExtractedJob
+type extractedJob = _struct.Kakao
 
 func Crawling(kakaoC chan<- []extractedJob) {
 	var jobs []extractedJob
