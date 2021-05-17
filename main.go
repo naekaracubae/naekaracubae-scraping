@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/msyhu/GobbyIsntFree/aws"
 	"github.com/msyhu/GobbyIsntFree/etc"
 	"github.com/msyhu/GobbyIsntFree/jobscrapper"
@@ -19,6 +20,9 @@ func jobscrapping() {
 	kakaoJobs := <-kakaoC
 
 	contents := etc.StructToStr(&kakaoJobs)
+	fmt.Println(contents)
+
 	subscribers := aws.GetSubscribers()
+	fmt.Println(subscribers)
 	aws.SendMail(contents, subscribers)
 }

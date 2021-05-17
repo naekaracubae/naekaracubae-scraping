@@ -7,6 +7,8 @@ type Kakao struct {
 	JobGroups []string `json:"JobGroups"`
 	Company   string   `json:"Company"`
 	JobType   string   `json:"JobType"`
+	Url       string   `json:"Url"`
+	Id        string   `json:"Id"`
 }
 
 type Indeed struct {

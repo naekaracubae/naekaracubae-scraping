@@ -89,6 +89,11 @@ func KakaoExtractJob(card *goquery.Selection, c chan<- kakaoJob) {
 	// title
 	title := card.Find(".tit_jobs").Text()
 
+	// Url, Id
+	link, _ := card.Find(".link_jobs").Attr("href")
+	fullLink := "https://careers.kakao.com" + link
+	id := extractId(link)
+
 	// endDate, location
 	var endDateAndLocation []string
 	card.Find(".list_info>dd").Each(func(i int, s *goquery.Selection) {
@@ -118,8 +123,13 @@ func KakaoExtractJob(card *goquery.Selection, c chan<- kakaoJob) {
 	company := companyAndJobType[0]
 	jobType := companyAndJobType[1]
 
-	//fmt.Println(company)
+	c <- kakaoJob{Title: title, EndDate: endDate, Location: location, JobGroups: jobGroups, Company: company, JobType: jobType, Url: fullLink, Id: id}
 
-	c <- kakaoJob{Title: title, EndDate: endDate, Location: location, JobGroups: jobGroups, Company: company, JobType: jobType}
+}
 
+func extractId(link string) string {
+	l1 := strings.Split(link, "?")[0]
+	l2 := strings.Split(l1, "/")[2]
+
+	return l2
 }
