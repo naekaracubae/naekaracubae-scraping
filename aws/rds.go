@@ -14,6 +14,8 @@ import (
 	_struct "github.com/msyhu/GobbyIsntFree/struct"
 )
 
+type kakaoExtractedJob = _struct.Kakao
+
 func getSecret() *_struct.SecretManager {
 	secretName := "GOBBY_RDS_SECRETS"
 	region := "ap-northeast-2"
@@ -99,11 +101,6 @@ func GetSubscribers() []_struct.Subscriber {
 	etc.CheckErr(err)
 	defer db.Close()
 
-	err = db.Ping()
-	etc.CheckErr(err)
-	fmt.Println("Successfully created connection to database.")
-
-	// TODO : 쿼리도 암호화 해야하나?
 	rows, err := db.Query("SELECT name, email from subscribers;")
 	etc.CheckErr(err)
 	defer rows.Close()
@@ -121,4 +118,42 @@ func GetSubscribers() []_struct.Subscriber {
 	}
 
 	return subscribers
+}
+
+func CheckAndSaveJob(kakaoJobs *[]kakaoExtractedJob) {
+	// 테이블을 ID로 조회해서 없는 경우 DB에 새로 저장한다.
+	for _, kakaoJob := range *kakaoJobs {
+		if !CheckJob(&kakaoJob) {
+			saveJob(&kakaoJob)
+		}
+	}
+
+}
+
+func CheckJob(kakaoJobs *kakaoExtractedJob) bool {
+	id := kakaoJobs.Id
+	gobbyRdsSecret := getSecret()
+
+	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
+		gobbyRdsSecret.User,
+		gobbyRdsSecret.Password,
+		gobbyRdsSecret.Host,
+		gobbyRdsSecret.Database)
+
+	// Initialize connection object.
+	db, err := sql.Open("mysql", connectionString)
+	etc.CheckErr(err)
+	defer db.Close()
+
+	query := "SELECT * FROM jobs WHERE ID =" + id
+	var row string
+	queryErr := db.QueryRow(query).Scan(&row)
+	if queryErr != nil {
+		return false
+	}
+
+	return true
+}
+
+func saveJob(kakaoJobs *kakaoExtractedJob) {
 }

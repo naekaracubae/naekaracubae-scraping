@@ -2,6 +2,7 @@ package jobscrapper_test
 
 import (
 	"fmt"
+	"github.com/msyhu/GobbyIsntFree/aws"
 	"github.com/msyhu/GobbyIsntFree/jobscrapper"
 	_struct "github.com/msyhu/GobbyIsntFree/struct"
 	"testing"
@@ -41,4 +42,18 @@ func TestKakaoCrawling(t *testing.T) {
 		fmt.Println(job)
 	}
 
+}
+
+func TestCheckJob(t *testing.T) {
+	testKakaoStruct := kakaoJob{
+		Title:    "test",
+		EndDate:  "채용시까지",
+		Location: "판교",
+		Company:  "kakao",
+		Url:      "https://careers.kakao.com/jobs/P-9349?part=TECHNOLOGY&company=ALL",
+		JobType:  "정규직",
+		Id:       "P-9349",
+	}
+
+	aws.CheckJob(&testKakaoStruct)
 }
