@@ -21,7 +21,7 @@ const (
 	CharSet = "UTF-8"
 )
 
-func SendMail(contents string, subscribers []_struct.Subscriber) {
+func SendMail(contents *string, subscribers []_struct.Subscriber) {
 
 	// Create a new session in the us-west-2 region.
 	// Replace us-west-2 with the AWS Region you're using for Amazon SES.
@@ -44,9 +44,9 @@ func SendMail(contents string, subscribers []_struct.Subscriber) {
 		},
 		Message: &ses.Message{
 			Body: &ses.Body{
-				Text: &ses.Content{
+				Html: &ses.Content{
 					Charset: aws.String(CharSet),
-					Data:    aws.String(contents),
+					Data:    aws.String(*contents),
 				},
 			},
 			Subject: &ses.Content{

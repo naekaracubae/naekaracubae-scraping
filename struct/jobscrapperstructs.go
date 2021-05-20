@@ -3,6 +3,7 @@ package _struct
 type Kakao struct {
 	Title     string   `json:"Title"`
 	EndDate   string   `json:"EndDate"`
+	StartDate string   `json:"StartDate"`
 	Location  string   `json:"Location"`
 	JobGroups []string `json:"JobGroups"`
 	Company   string   `json:"Company"`
