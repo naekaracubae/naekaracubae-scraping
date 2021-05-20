@@ -16,7 +16,7 @@ import (
 
 type kakaoExtractedJob = _struct.Kakao
 
-func getSecret() *_struct.SecretManager {
+func GetSecret() *_struct.SecretManager {
 	secretName := "GOBBY_RDS_SECRETS"
 	region := "ap-northeast-2"
 
@@ -88,7 +88,7 @@ func getSecret() *_struct.SecretManager {
 }
 
 func GetSubscribers() []_struct.Subscriber {
-	gobbyRdsSecret := getSecret()
+	gobbyRdsSecret := GetSecret()
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
 		gobbyRdsSecret.User,
@@ -121,18 +121,8 @@ func GetSubscribers() []_struct.Subscriber {
 }
 
 func CheckAndSaveJob(kakaoJobs *[]kakaoExtractedJob) {
-	// 테이블을 ID로 조회해서 없는 경우 DB에 새로 저장한다.
-	for _, kakaoJob := range *kakaoJobs {
-		if !CheckJob(&kakaoJob) {
-			saveJob(&kakaoJob)
-		}
-	}
 
-}
-
-func CheckJob(kakaoJobs *kakaoExtractedJob) bool {
-	id := kakaoJobs.Id
-	gobbyRdsSecret := getSecret()
+	gobbyRdsSecret := GetSecret()
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
 		gobbyRdsSecret.User,
@@ -145,7 +135,20 @@ func CheckJob(kakaoJobs *kakaoExtractedJob) bool {
 	etc.CheckErr(err)
 	defer db.Close()
 
-	query := "SELECT * FROM jobs WHERE ID =" + id
+	// 테이블을 ID로 조회해서 없는 경우 DB에 새로 저장한다.
+	for _, kakaoJob := range *kakaoJobs {
+		if !IsJobExist(&kakaoJob, db) {
+			SaveJob(&kakaoJob, db)
+		}
+	}
+
+}
+
+func IsJobExist(kakaoJobs *kakaoExtractedJob, db *sql.DB) bool {
+
+	id := kakaoJobs.Id
+
+	query := "SELECT id FROM jobs WHERE ID='" + id + "'"
 	var row string
 	queryErr := db.QueryRow(query).Scan(&row)
 	if queryErr != nil {
@@ -155,5 +158,5 @@ func CheckJob(kakaoJobs *kakaoExtractedJob) bool {
 	return true
 }
 
-func saveJob(kakaoJobs *kakaoExtractedJob) {
+func SaveJob(kakaoJobs *kakaoExtractedJob, db *sql.DB) {
 }
