@@ -67,3 +67,11 @@ func TestSaveJob(t *testing.T) {
 		t.Error("Wrong result")
 	}
 }
+
+func TestGetSecret(t *testing.T) {
+	gobbyRdsSecret := aws.GetSecret()
+
+	if gobbyRdsSecret == nil {
+		t.Error("Wrong result")
+	}
+}
