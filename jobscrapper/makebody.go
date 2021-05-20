@@ -11,8 +11,9 @@ import (
 )
 
 func MakeHtmlBody() *string {
+	today := time.Now().Format("2006-01-02")
 
-	contents := "<h1>개발 채용 일보</h1>" +
+	contents := "<h1>" + today + " 의 개발 채용 일보📰</h1>" +
 		"<h2>오늘의 신규 채용</h2><ul>"
 
 	gobbyRdsSecret := aws.GetSecret()
@@ -30,7 +31,7 @@ func MakeHtmlBody() *string {
 
 	// 오늘 새로 크롤링된 job 조회
 	// 오늘 새로 크롤링된 job body 만들어주기
-	today := time.Now().Format("2006-01-02")
+
 	todayQuery := "SELECT * FROM jobs WHERE START_DATE = '" + today + "'"
 	todayRows, err := db.Query(todayQuery)
 	etc.CheckErr(err)
