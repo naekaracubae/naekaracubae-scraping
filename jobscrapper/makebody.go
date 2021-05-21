@@ -59,7 +59,7 @@ func MakeHtmlBody() *string {
 	defer beforeRows.Close()
 	for beforeRows.Next() {
 		var tempJob _struct.Kakao
-		err := todayRows.Scan(&tempJob.Id, &tempJob.Company, &tempJob.Url, &tempJob.EndDate, &tempJob.StartDate, &tempJob.Location, &tempJob.Title)
+		err := beforeRows.Scan(&tempJob.Id, &tempJob.Company, &tempJob.Url, &tempJob.EndDate, &tempJob.StartDate, &tempJob.Location, &tempJob.Title)
 		if err != nil {
 			log.Fatal(err)
 		}
