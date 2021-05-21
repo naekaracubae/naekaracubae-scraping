@@ -33,8 +33,9 @@ func SendMail(contents *string, subscribers []_struct.Subscriber) {
 	svc := ses.New(sess)
 
 	var toAddresses []*string
-	for _, subscriber := range subscribers {
-		toAddresses = append(toAddresses, &subscriber.Email)
+
+	for i := range subscribers {
+		toAddresses = append(toAddresses, &subscribers[i].Email)
 	}
 	// Assemble the email.
 	input := &ses.SendEmailInput{
