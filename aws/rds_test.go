@@ -12,7 +12,8 @@ import (
 type kakaoJob = _struct.Kakao
 
 func TestGetSubscribers(t *testing.T) {
-	aws.GetSubscribers()
+	subscribers := aws.GetSubscribers()
+	fmt.Println(subscribers)
 }
 
 var testKakaoStruct = kakaoJob{

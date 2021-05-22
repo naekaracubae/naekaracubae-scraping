@@ -103,7 +103,9 @@ func GetSubscribers() []_struct.Subscriber {
 	etc.CheckErr(err)
 	defer db.Close()
 
-	rows, err := db.Query("SELECT name, email from subscribers;")
+	// query := "SELECT name, email from subscribers;"
+	query := "SELECT name, email from test_subscribers;"
+	rows, err := db.Query(query)
 	etc.CheckErr(err)
 	defer rows.Close()
 	fmt.Println("Reading data:")

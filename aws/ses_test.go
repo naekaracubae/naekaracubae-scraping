@@ -6,5 +6,6 @@ import (
 )
 
 func TestSendmail(t *testing.T) {
-	aws.SendMail("hello world", nil)
+	contents := "hello world"
+	aws.SendMail(&contents, nil)
 }
