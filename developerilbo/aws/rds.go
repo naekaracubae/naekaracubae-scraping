@@ -10,15 +10,15 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/msyhu/GobbyIsntFree/etc"
-	_struct "github.com/msyhu/GobbyIsntFree/struct"
+	etc2 "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
+	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
 	"log"
 	"time"
 )
 
-type kakaoExtractedJob = _struct.Kakao
+type kakaoExtractedJob = _struct2.Kakao
 
-func GetSecret() *_struct.SecretManager {
+func GetSecret() *_struct2.SecretManager {
 	secretName := "GOBBY_RDS_SECRETS"
 	region := "ap-northeast-2"
 
@@ -81,15 +81,15 @@ func GetSecret() *_struct.SecretManager {
 	}
 
 	// Your code goes here.
-	var gobbyRdsSecret = _struct.SecretManager{}
+	var gobbyRdsSecret = _struct2.SecretManager{}
 	jsonErr := json.Unmarshal([]byte(secretString), &gobbyRdsSecret)
-	etc.CheckErr(jsonErr)
+	etc2.CheckErr(jsonErr)
 
 	return &gobbyRdsSecret
 
 }
 
-func GetSubscribers() []_struct.Subscriber {
+func GetSubscribers() []_struct2.Subscriber {
 	gobbyRdsSecret := GetSecret()
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
@@ -100,24 +100,25 @@ func GetSubscribers() []_struct.Subscriber {
 
 	// Initialize connection object.
 	db, err := sql.Open("mysql", connectionString)
-	etc.CheckErr(err)
+	etc2.CheckErr(err)
 	defer db.Close()
 
-	// query := "SELECT name, email from subscribers;"
-	query := "SELECT name, email from test_subscribers;"
+	query := "SELECT name, email from subscribers;"
+	//query := "SELECT name, email from test_subscribers;"
+
 	rows, err := db.Query(query)
-	etc.CheckErr(err)
+	etc2.CheckErr(err)
 	defer rows.Close()
 	fmt.Println("Reading data:")
-	var subscribers []_struct.Subscriber
+	var subscribers []_struct2.Subscriber
 
 	err = rows.Err()
-	etc.CheckErr(err)
+	etc2.CheckErr(err)
 
 	for rows.Next() {
-		subscriber := _struct.Subscriber{}
+		subscriber := _struct2.Subscriber{}
 		err := rows.Scan(&subscriber.Name, &subscriber.Email)
-		etc.CheckErr(err)
+		etc2.CheckErr(err)
 		subscribers = append(subscribers, subscriber)
 	}
 
@@ -136,7 +137,7 @@ func CheckAndSaveJob(kakaoJobs *[]kakaoExtractedJob) {
 
 	// Initialize connection object.
 	db, err := sql.Open("mysql", connectionString)
-	etc.CheckErr(err)
+	etc2.CheckErr(err)
 	defer db.Close()
 
 	// 테이블을 ID로 조회해서 없는 경우 DB에 새로 저장한다.

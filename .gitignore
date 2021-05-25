@@ -17,3 +17,5 @@
 .idea
 
 secrets
+bin
+.serverless

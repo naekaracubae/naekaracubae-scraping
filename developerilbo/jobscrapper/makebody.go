@@ -3,9 +3,9 @@ package jobscrapper
 import (
 	"database/sql"
 	"fmt"
-	"github.com/msyhu/GobbyIsntFree/aws"
-	"github.com/msyhu/GobbyIsntFree/etc"
-	_struct "github.com/msyhu/GobbyIsntFree/struct"
+	aws2 "github.com/msyhu/GobbyIsntFree/developerilbo/aws"
+	etc2 "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
+	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
 	"log"
 	"time"
 )
@@ -16,7 +16,7 @@ func MakeHtmlBody() *string {
 	contents := "<h1>" + today + " 의 개발 채용 일보📰</h1>" +
 		"<h2>오늘의 신규 채용</h2><ul>"
 
-	gobbyRdsSecret := aws.GetSecret()
+	gobbyRdsSecret := aws2.GetSecret()
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
 		gobbyRdsSecret.User,
@@ -26,7 +26,7 @@ func MakeHtmlBody() *string {
 
 	// Initialize connection object.
 	db, err := sql.Open("mysql", connectionString)
-	etc.CheckErr(err)
+	etc2.CheckErr(err)
 	defer db.Close()
 
 	// 오늘 새로 크롤링된 job 조회
@@ -34,10 +34,10 @@ func MakeHtmlBody() *string {
 
 	todayQuery := "SELECT * FROM jobs WHERE START_DATE = '" + today + "'"
 	todayRows, err := db.Query(todayQuery)
-	etc.CheckErr(err)
+	etc2.CheckErr(err)
 	defer todayRows.Close()
 	for todayRows.Next() {
-		var tempJob _struct.Kakao
+		var tempJob _struct2.Kakao
 		err := todayRows.Scan(&tempJob.Id, &tempJob.Company, &tempJob.Url, &tempJob.EndDate, &tempJob.StartDate, &tempJob.Location, &tempJob.Title)
 		if err != nil {
 			log.Fatal(err)
@@ -55,10 +55,10 @@ func MakeHtmlBody() *string {
 	notTodayQuery := "SELECT * FROM jobs WHERE START_DATE <> '" + today + "'"
 	contents += "</ul><h2>기존 채용</h2><ul>"
 	beforeRows, err := db.Query(notTodayQuery)
-	etc.CheckErr(err)
+	etc2.CheckErr(err)
 	defer beforeRows.Close()
 	for beforeRows.Next() {
-		var tempJob _struct.Kakao
+		var tempJob _struct2.Kakao
 		err := beforeRows.Scan(&tempJob.Id, &tempJob.Company, &tempJob.Url, &tempJob.EndDate, &tempJob.StartDate, &tempJob.Location, &tempJob.Title)
 		if err != nil {
 			log.Fatal(err)

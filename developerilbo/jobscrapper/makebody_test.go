@@ -2,12 +2,12 @@ package jobscrapper_test
 
 import (
 	"fmt"
-	"github.com/msyhu/GobbyIsntFree/jobscrapper"
+	jobscrapper2 "github.com/msyhu/GobbyIsntFree/developerilbo/jobscrapper"
 	"testing"
 )
 
 func TestMakeHtmlBody(t *testing.T) {
-	contents := jobscrapper.MakeHtmlBody()
+	contents := jobscrapper2.MakeHtmlBody()
 
 	fmt.Println(contents)
 }

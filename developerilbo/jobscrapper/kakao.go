@@ -3,8 +3,8 @@ package jobscrapper
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/msyhu/GobbyIsntFree/etc"
-	_struct "github.com/msyhu/GobbyIsntFree/struct"
+	etc2 "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
+	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
 	"net/http"
 	"strconv"
 	"strings"
@@ -12,7 +12,7 @@ import (
 
 var kakaobaseURL string = "https://careers.kakao.com/jobs?part=TECHNOLOGY&company=ALL"
 
-type kakaoJob = _struct.Kakao
+type kakaoJob = _struct2.Kakao
 
 func KakaoCrawling(kakaoC chan<- []kakaoJob) {
 	var jobs []kakaoJob
@@ -37,19 +37,19 @@ func KakaoCrawling(kakaoC chan<- []kakaoJob) {
 func KakaoGetPages() int {
 	//lastPage := 1
 	res, err := http.Get(kakaobaseURL)
-	etc.CheckErr(err)
-	etc.CheckCode(res)
+	etc2.CheckErr(err)
+	etc2.CheckCode(res)
 
 	defer res.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
-	etc.CheckErr(err)
+	etc2.CheckErr(err)
 
 	pageSelection := doc.Find(".paging_list").Find("a")
 	lastPageHref, _ := pageSelection.Last().Attr("href")
 	lastPage := strings.Split(lastPageHref, "=")[1]
 	page, err := strconv.Atoi(lastPage)
-	etc.CheckErr(err)
+	etc2.CheckErr(err)
 
 	// 양쪽 화살표 4개 빼주고 현재 페이지 1 더해줌
 	return page
@@ -62,13 +62,13 @@ func KakaoGetPage(page int, mainC chan<- []kakaoJob) {
 	pageURL := kakaobaseURL + "&page=" + strconv.Itoa(page)
 	fmt.Println(pageURL)
 	res, err := http.Get(pageURL)
-	etc.CheckErr(err)
-	etc.CheckCode(res)
+	etc2.CheckErr(err)
+	etc2.CheckCode(res)
 
 	defer res.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
-	etc.CheckErr(err)
+	etc2.CheckErr(err)
 
 	searchCards := doc.Find(".list_jobs>li")
 

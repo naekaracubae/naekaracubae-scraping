@@ -3,16 +3,16 @@ package aws_test
 import (
 	"database/sql"
 	"fmt"
-	"github.com/msyhu/GobbyIsntFree/aws"
-	"github.com/msyhu/GobbyIsntFree/etc"
-	_struct "github.com/msyhu/GobbyIsntFree/struct"
+	aws2 "github.com/msyhu/GobbyIsntFree/developerilbo/aws"
+	etc2 "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
+	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
 	"testing"
 )
 
-type kakaoJob = _struct.Kakao
+type kakaoJob = _struct2.Kakao
 
 func TestGetSubscribers(t *testing.T) {
-	subscribers := aws.GetSubscribers()
+	subscribers := aws2.GetSubscribers()
 	fmt.Println(subscribers)
 }
 
@@ -28,7 +28,7 @@ var testKakaoStruct = kakaoJob{
 
 func TestIsJobExist(t *testing.T) {
 
-	gobbyRdsSecret := aws.GetSecret()
+	gobbyRdsSecret := aws2.GetSecret()
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
 		gobbyRdsSecret.User,
@@ -38,10 +38,10 @@ func TestIsJobExist(t *testing.T) {
 
 	// Initialize connection object.
 	db, err := sql.Open("mysql", connectionString)
-	etc.CheckErr(err)
+	etc2.CheckErr(err)
 	defer db.Close()
 
-	result := aws.IsJobExist(&testKakaoStruct, db)
+	result := aws2.IsJobExist(&testKakaoStruct, db)
 
 	if result != true {
 		t.Error("Wrong result")
@@ -49,7 +49,7 @@ func TestIsJobExist(t *testing.T) {
 }
 
 func TestSaveJob(t *testing.T) {
-	gobbyRdsSecret := aws.GetSecret()
+	gobbyRdsSecret := aws2.GetSecret()
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
 		gobbyRdsSecret.User,
@@ -59,10 +59,10 @@ func TestSaveJob(t *testing.T) {
 
 	// Initialize connection object.
 	db, err := sql.Open("mysql", connectionString)
-	etc.CheckErr(err)
+	etc2.CheckErr(err)
 	defer db.Close()
 
-	result := aws.SaveJob(&testKakaoStruct, db)
+	result := aws2.SaveJob(&testKakaoStruct, db)
 
 	if result != true {
 		t.Error("Wrong result")
@@ -70,7 +70,7 @@ func TestSaveJob(t *testing.T) {
 }
 
 func TestGetSecret(t *testing.T) {
-	gobbyRdsSecret := aws.GetSecret()
+	gobbyRdsSecret := aws2.GetSecret()
 
 	if gobbyRdsSecret == nil {
 		t.Error("Wrong result")

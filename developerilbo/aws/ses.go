@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
-	_struct "github.com/msyhu/GobbyIsntFree/struct"
+	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
 )
 
 const (
@@ -21,7 +21,7 @@ const (
 	CharSet = "UTF-8"
 )
 
-func SendMail(contents *string, subscribers []_struct.Subscriber) {
+func SendMail(contents *string, subscribers []_struct2.Subscriber) string {
 
 	// Create a new session in the us-west-2 region.
 	// Replace us-west-2 with the AWS Region you're using for Amazon SES.
@@ -82,9 +82,9 @@ func SendMail(contents *string, subscribers []_struct.Subscriber) {
 			fmt.Println(err.Error())
 		}
 
-		return
+		return ""
 	}
 
-	fmt.Println(result)
+	return result.String()
 
 }

@@ -1,11 +1,11 @@
 package aws_test
 
 import (
-	"github.com/msyhu/GobbyIsntFree/aws"
+	aws2 "github.com/msyhu/GobbyIsntFree/developerilbo/aws"
 	"testing"
 )
 
 func TestSendmail(t *testing.T) {
 	contents := "hello world"
-	aws.SendMail(&contents, nil)
+	aws2.SendMail(&contents, nil)
 }

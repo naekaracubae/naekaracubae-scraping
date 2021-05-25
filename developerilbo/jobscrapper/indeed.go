@@ -3,15 +3,15 @@ package jobscrapper
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/msyhu/GobbyIsntFree/etc"
-	_struct "github.com/msyhu/GobbyIsntFree/struct"
+	etc2 "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
+	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
 	"net/http"
 	"strconv"
 )
 
 var indeedbaseURL string = "https://kr.indeed.com/jobs?q=python&limit=50"
 
-type indeedJob = _struct.Indeed
+type indeedJob = _struct2.Indeed
 
 func IndeedCrawling(indeedC chan<- []indeedJob) {
 	var jobs []indeedJob
@@ -37,13 +37,13 @@ func IndeedGetPage(page int, mainC chan<- []indeedJob) {
 	pageURL := indeedbaseURL + "&start=" + strconv.Itoa(page*50)
 	fmt.Println(pageURL)
 	res, err := http.Get(pageURL)
-	etc.CheckErr(err)
-	etc.CheckCode(res)
+	etc2.CheckErr(err)
+	etc2.CheckCode(res)
 
 	defer res.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
-	etc.CheckErr(err)
+	etc2.CheckErr(err)
 
 	searchCards := doc.Find(".jobsearch-SerpJobCard")
 
@@ -62,9 +62,9 @@ func IndeedGetPage(page int, mainC chan<- []indeedJob) {
 
 func IndeedExtractJob(card *goquery.Selection, c chan<- indeedJob) {
 	id, _ := card.Attr("data-jk")
-	title := etc.CleanString(card.Find(".title>a").Text())
-	company := etc.CleanString(card.Find(".sjcl>div>span").Text())
-	location := etc.CleanString(card.Find(".sjcl").Text())
+	title := etc2.CleanString(card.Find(".title>a").Text())
+	company := etc2.CleanString(card.Find(".sjcl>div>span").Text())
+	location := etc2.CleanString(card.Find(".sjcl").Text())
 
 	//fmt.Println(company)
 
@@ -75,13 +75,13 @@ func IndeedExtractJob(card *goquery.Selection, c chan<- indeedJob) {
 func IndeedGetPages() int {
 	pages := 0
 	res, err := http.Get(indeedbaseURL)
-	etc.CheckErr(err)
-	etc.CheckCode(res)
+	etc2.CheckErr(err)
+	etc2.CheckCode(res)
 
 	defer res.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
-	etc.CheckErr(err)
+	etc2.CheckErr(err)
 
 	doc.Find(".pagination").Each(func(i int, s *goquery.Selection) {
 		pages = s.Find("a").Length()
