@@ -71,6 +71,7 @@ func TestSaveJob(t *testing.T) {
 
 func TestGetSecret(t *testing.T) {
 	gobbyRdsSecret := aws2.GetSecret()
+	fmt.Println(gobbyRdsSecret)
 
 	if gobbyRdsSecret == nil {
 		t.Error("Wrong result")

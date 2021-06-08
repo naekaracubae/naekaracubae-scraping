@@ -144,9 +144,29 @@ func CheckAndSaveJob(kakaoJobs *[]kakaoExtractedJob) {
 	for _, kakaoJob := range *kakaoJobs {
 		if !IsJobExist(&kakaoJob, db) {
 			SaveJob(&kakaoJob, db)
+		} else {
+			// 이미 존재하면, 마지막 있었던 날짜(LAST_EXIST_DATE) 최신화 시켜주기.
+			// 메일 보낼때, LAST_EXIST_DATE가 오늘 날짜인 ROW 만 전송한다.
+			UpdateLastExistDate(&kakaoJob, db)
 		}
 	}
 
+}
+
+func UpdateLastExistDate(kakaoJob *kakaoExtractedJob, db *sql.DB) bool {
+	today := time.Now().Format("2006-01-02")
+	result, err := db.Exec("UPDATE jobs SET LAST_EXIST_DATE=? WHERE ID=?", today, kakaoJob.Id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// sql.Result.RowsAffected() 체크
+	n, err := result.RowsAffected()
+	if n == 1 {
+		return true
+	}
+
+	return false
 }
 
 func IsJobExist(kakaoJobs *kakaoExtractedJob, db *sql.DB) bool {
