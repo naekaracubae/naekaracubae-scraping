@@ -184,8 +184,8 @@ func IsJobExist(kakaoJobs *kakaoExtractedJob, db *sql.DB) bool {
 }
 
 func SaveJob(kakaoJobs *kakaoExtractedJob, db *sql.DB) bool {
-	startDate := time.Now().Format("2006-01-02")
-	result, err := db.Exec("INSERT INTO jobs VALUES (?, ?, ?, ?, ?, ?, ?)", kakaoJobs.Id, kakaoJobs.Company, kakaoJobs.Url, kakaoJobs.EndDate, startDate, kakaoJobs.Location, kakaoJobs.Title)
+	today := time.Now().Format("2006-01-02")
+	result, err := db.Exec("INSERT INTO jobs VALUES (?, ?, ?, ?, ?, ?, ?, ?)", kakaoJobs.Id, kakaoJobs.Company, kakaoJobs.Url, kakaoJobs.EndDate, today, kakaoJobs.Location, kakaoJobs.Title, today)
 	if err != nil {
 		log.Fatal(err)
 	}
