@@ -16,6 +16,7 @@ type kakaoExtractedJob = _struct2.Kakao
 
 func main() {
 	lambda.Start(Handler)
+	//jobscrapping()
 }
 
 // Response is of type APIGatewayProxyResponse since we're leveraging the

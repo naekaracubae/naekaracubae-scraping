@@ -38,7 +38,7 @@ func MakeHtmlBody() *string {
 	defer todayRows.Close()
 	for todayRows.Next() {
 		var tempJob _struct2.Kakao
-		err := todayRows.Scan(&tempJob.Id, &tempJob.Company, &tempJob.Url, &tempJob.EndDate, &tempJob.StartDate, &tempJob.Location, &tempJob.Title)
+		err := todayRows.Scan(&tempJob.Id, &tempJob.Company, &tempJob.Url, &tempJob.EndDate, &tempJob.StartDate, &tempJob.Location, &tempJob.Title, &tempJob.LastExistDate)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -59,7 +59,7 @@ func MakeHtmlBody() *string {
 	defer beforeRows.Close()
 	for beforeRows.Next() {
 		var tempJob _struct2.Kakao
-		err := beforeRows.Scan(&tempJob.Id, &tempJob.Company, &tempJob.Url, &tempJob.EndDate, &tempJob.StartDate, &tempJob.Location, &tempJob.Title)
+		err := beforeRows.Scan(&tempJob.Id, &tempJob.Company, &tempJob.Url, &tempJob.EndDate, &tempJob.StartDate, &tempJob.Location, &tempJob.Title, &tempJob.LastExistDate)
 		if err != nil {
 			log.Fatal(err)
 		}
