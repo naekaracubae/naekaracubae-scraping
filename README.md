@@ -23,3 +23,5 @@
 - Language & Framework
     - Golang : 보통 scraping 하면  python을 일반적으로 사용하지만, 병렬처리에 특화되어 있는 golang의 goroutine을 이용해 scraping 속도를 높이고자 했습니다.
     - Spring boot & React : 구독 신청 & 각 사이트 정보를 보여주는 페이지 제작에 사용합니다.
+
+feature/line 에서 이상한문장 추가. 이제 main까지 가보자
