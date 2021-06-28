@@ -52,8 +52,7 @@ func MakeHtmlBody() *string {
 
 	// 그외 기존 job 조회
 	// 기존 job body 만들어주기
-	// TODO : 메일 보낼때, LAST_EXIST_DATE가 오늘 날짜인 ROW 만 전송한다.
-	notTodayQuery := "SELECT * FROM jobs WHERE START_DATE <> '" + today + "'"
+	notTodayQuery := "SELECT * FROM jobs WHERE START_DATE <> '" + today + "' AND LAST_EXIST_DATE = '" + today + "'"
 	contents += "</ul><h2>기존 채용</h2><ul>"
 	beforeRows, err := db.Query(notTodayQuery)
 	etc2.CheckErr(err)
