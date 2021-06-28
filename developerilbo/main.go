@@ -6,17 +6,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-lambda-go/lambda"
 	aws2 "github.com/msyhu/GobbyIsntFree/developerilbo/aws"
 	jobscrapper2 "github.com/msyhu/GobbyIsntFree/developerilbo/jobscrapper"
 	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
 )
 
 type kakaoExtractedJob = _struct2.Kakao
+type lineExtractedJob = _struct2.Line
 
 func main() {
-	lambda.Start(Handler)
-	//jobscrapping()
+	//lambda.Start(Handler)
+	//KakaoScrapping()
+	LineScrapping()
+	MakeAndSendMail()
 }
 
 // Response is of type APIGatewayProxyResponse since we're leveraging the
@@ -29,7 +31,7 @@ type Response events.APIGatewayProxyResponse
 func Handler(ctx context.Context) (Response, error) {
 	var buf bytes.Buffer
 
-	jobscrapping()
+	go KakaoScrapping()
 
 	body, err := json.Marshal(map[string]interface{}{
 		"message": "ok",
@@ -51,7 +53,17 @@ func Handler(ctx context.Context) (Response, error) {
 	return resp, nil
 }
 
-func jobscrapping() string {
+func MakeAndSendMail() string {
+	contents := jobscrapper2.MakeHtmlBody()
+
+	// 메일 보내기 : 함수 하나로 만들것
+	subscribers := aws2.GetSubscribers()
+	sendMailResult := aws2.SendMail(contents, subscribers)
+
+	return sendMailResult
+}
+
+func KakaoScrapping() {
 	// 크롤링하기
 	kakaoC := make(chan []kakaoExtractedJob)
 	go jobscrapper2.KakaoCrawling(kakaoC)
@@ -62,11 +74,18 @@ func jobscrapping() string {
 	// DB 저장하기
 	aws2.CheckAndSaveJob(&kakaoJobs)
 
-	contents := jobscrapper2.MakeHtmlBody()
+}
 
-	// 메일 보내기 : 함수 하나로 만들것
-	subscribers := aws2.GetSubscribers()
-	sendMailResult := aws2.SendMail(contents, subscribers)
+func LineScrapping() {
+	// 크롤링하기
+	lineC := make(chan []lineExtractedJob)
+	go jobscrapper2.LineCrawling(lineC)
+	lineJobs := <-lineC
 
-	return sendMailResult
+	fmt.Println(lineJobs)
+
+	// DB 저장하기
+	// TODO : 인터페이스로 kakao 구조체와 line 구조체 동시에 받을수 있도록 조상 생성
+	//aws2.CheckAndSaveJob(&lineJobs)
+
 }
