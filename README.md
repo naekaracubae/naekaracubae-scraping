@@ -7,3 +7,6 @@
 - AWS Lambda
 - AWS SES
 - AWS RDS
+
+## 배포 파이프라인
+구축 계획중입니다.
