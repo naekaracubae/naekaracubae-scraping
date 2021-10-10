@@ -46,11 +46,23 @@ func LineExtractJob(card *goquery.Selection, c chan<- lineJob) {
 	splitByBar := strings.Split(splitByJob[0], "|")
 	location := strings.Trim(splitByBar[0], " ")
 	company := strings.Trim(splitByBar[1], " ")
-	fmt.Println(location, ",", company)
+	//fmt.Println(location, ",", company)
 
 	// title
-	//title := card.Find(".title").Text()
-	//fmt.Println(title)
+	title := strings.Trim(card.Find(".title").Text(), " ")
+	//fmt.Println(location, ",", company, ",", title)
+
+	// startdate, enddate
+	date := card.Find(".date").Text()
+	//fmt.Println(location, ",", company, ",", title, ",", date)
+	splitByStartEnd := strings.Split(date, "~")
+	startDate := strings.Trim(splitByStartEnd[0], " ")
+	endDate := strings.Trim(splitByStartEnd[1], " ")
+	fmt.Println(location, ",", company, ",", title, ",", startDate, ",", endDate)
+
+	// url
+
+	// id
 
 	//// Url, Id
 	//link, _ := card.Find(".link_jobs").Attr("href")
