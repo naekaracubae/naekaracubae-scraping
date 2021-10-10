@@ -12,7 +12,8 @@ var linebaseURL = "https://careers.linecorp.com/ko/jobs"
 
 type lineJob = _struct.Line
 
-func LineCrawling() []lineJob {
+func LineCrawling(lineC chan<- []lineJob) {
+	//fmt.Println("line start!!")
 	var jobs []lineJob
 
 	res, err := http.Get(linebaseURL)
@@ -45,7 +46,7 @@ func LineCrawling() []lineJob {
 		jobs = append(jobs, job)
 	}
 
-	return jobs
+	lineC <- jobs
 }
 
 func LineExtractJob(card *goquery.Selection, c chan<- lineJob) {
@@ -79,6 +80,7 @@ func LineExtractJob(card *goquery.Selection, c chan<- lineJob) {
 	link, _ := card.Find("a").Attr("href")
 	fullLink := "https://careers.linecorp.com" + link
 	//fmt.Println(location, ",", company, ",", title, ",", startDate, ",", endDate, ",", fullLink)
+	//fmt.Println(fullLink)
 
 	// id
 	id := strings.Split(link, "/")[3]

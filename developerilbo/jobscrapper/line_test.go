@@ -1,16 +1,17 @@
 package jobscrapper
 
 import (
-	//"fmt"
-	"fmt"
 	"testing"
 )
 
 func TestLineCrawling(t *testing.T) {
-	var jobs []lineJob
-	jobs = LineCrawling()
-
-	fmt.Println(jobs)
+	//var jobs []lineJob
+	//c := make(chan []lineJob)
+	//LineCrawling(c)
+	//
+	//jobs <- c
+	//
+	//fmt.Println(jobs)
 
 }
 
