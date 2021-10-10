@@ -1,7 +1,6 @@
 package jobscrapper
 
 import (
-	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	etc2 "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
 	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
@@ -24,7 +23,6 @@ func KakaoCrawling(kakaoC chan<- []kakaoJob) {
 		go KakaoGetPage(i, c)
 	}
 
-	// TODO : waitgroup 이용해서 refactoring 해보기
 	for i := 0; i < totalPages; i++ {
 		kakaoJobs := <-c
 		jobs = append(jobs, kakaoJobs...)
@@ -60,7 +58,7 @@ func KakaoGetPage(page int, mainC chan<- []kakaoJob) {
 	var jobs []kakaoJob
 	c := make(chan kakaoJob)
 	pageURL := kakaobaseURL + "&page=" + strconv.Itoa(page)
-	fmt.Println(pageURL)
+	//fmt.Println(pageURL)
 	res, err := http.Get(pageURL)
 	etc2.CheckErr(err)
 	etc2.CheckCode(res)
@@ -93,6 +91,7 @@ func KakaoExtractJob(card *goquery.Selection, c chan<- kakaoJob) {
 	link, _ := card.Find(".link_jobs").Attr("href")
 	fullLink := "https://careers.kakao.com" + link
 	id := extractId(link)
+	//fmt.Println(link)
 
 	// endDate, location
 	var endDateAndLocation []string

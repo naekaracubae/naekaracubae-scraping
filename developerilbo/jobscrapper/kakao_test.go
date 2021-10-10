@@ -11,8 +11,9 @@ type kakaoJob = _struct2.Kakao
 
 func TestKakaoGetPages(t *testing.T) {
 	pages := jobscrapper2.KakaoGetPages()
+	fmt.Println(pages)
 
-	if pages != 14 {
+	if pages != 16 {
 		t.Error("Wrong result", pages)
 	}
 }
