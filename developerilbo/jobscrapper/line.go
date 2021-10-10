@@ -39,11 +39,14 @@ func LineExtractJob(card *goquery.Selection, c chan<- lineJob) {
 	if strings.Contains(infos, "Engineering") == false {
 		return
 	}
-	fmt.Println(infos)
+	//fmt.Println(infos)
 
 	// infos -> LOCATION, COMPANY 분리
-
-	//fmt.Println(infos)
+	splitByJob := strings.Split(infos, "Engineering")
+	splitByBar := strings.Split(splitByJob[0], "|")
+	location := strings.Trim(splitByBar[0], " ")
+	company := strings.Trim(splitByBar[1], " ")
+	fmt.Println(location, ",", company)
 
 	// title
 	//title := card.Find(".title").Text()
