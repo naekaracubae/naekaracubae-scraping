@@ -8,6 +8,7 @@ import (
 )
 
 type kakaoExtractedJob = _struct2.Kakao
+type lineExtractedJob = _struct2.Line
 
 func main() {
 	jobscrapping()

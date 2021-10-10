@@ -12,8 +12,8 @@ var linebaseURL = "https://careers.linecorp.com/ko/jobs"
 
 type lineJob = _struct.Line
 
-func LineCrawling(lineC chan<- []lineJob) {
-	//var jobs []lineJob
+func LineCrawling() []lineJob {
+	var jobs []lineJob
 
 	res, err := http.Get(linebaseURL)
 	etc2.CheckErr(err)
@@ -30,6 +30,22 @@ func LineCrawling(lineC chan<- []lineJob) {
 	searchCards.Each(func(i int, card *goquery.Selection) {
 		go LineExtractJob(card, c)
 	})
+
+	countEngineering := 0
+	searchCards.Each(func(i int, card *goquery.Selection) {
+		infos := card.Find(".text_filter").Text()
+		if strings.Contains(infos, "Engineering") {
+			countEngineering += 1
+		}
+	})
+
+	for i := 0; i < countEngineering; i++ {
+		job := <-c
+		//fmt.Println(job)
+		jobs = append(jobs, job)
+	}
+
+	return jobs
 }
 
 func LineExtractJob(card *goquery.Selection, c chan<- lineJob) {
