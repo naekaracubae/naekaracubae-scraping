@@ -1,7 +1,6 @@
 package jobscrapper
 
 import (
-	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	etc2 "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
 	_struct "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
@@ -9,7 +8,7 @@ import (
 	"strings"
 )
 
-var linebaseURL string = "https://careers.linecorp.com/ko/jobs"
+var linebaseURL = "https://careers.linecorp.com/ko/jobs"
 
 type lineJob = _struct.Line
 
@@ -58,54 +57,24 @@ func LineExtractJob(card *goquery.Selection, c chan<- lineJob) {
 	splitByStartEnd := strings.Split(date, "~")
 	startDate := strings.Trim(splitByStartEnd[0], " ")
 	endDate := strings.Trim(splitByStartEnd[1], " ")
-	fmt.Println(location, ",", company, ",", title, ",", startDate, ",", endDate)
+	//fmt.Println(location, ",", company, ",", title, ",", startDate, ",", endDate)
 
 	// url
+	link, _ := card.Find("a").Attr("href")
+	fullLink := "https://careers.linecorp.com" + link
+	//fmt.Println(location, ",", company, ",", title, ",", startDate, ",", endDate, ",", fullLink)
 
 	// id
+	id := strings.Split(link, "/")[3]
+	//fmt.Println(location, ",", company, ",", title, ",", startDate, ",", endDate, ",", fullLink, ",", id)
 
-	//// Url, Id
-	//link, _ := card.Find(".link_jobs").Attr("href")
-	//fullLink := "https://careers.line.com" + link
-	//id := extractId(link)
-	//
-	//// endDate, location
-	//var endDateAndLocation []string
-	//card.Find(".list_info>dd").Each(func(i int, s *goquery.Selection) {
-	//	endDateAndLocation = append(endDateAndLocation, s.Text())
-	//})
-	//
-	//var endDate = ""
-	//var location = ""
-	//if len(endDateAndLocation) == 2 {
-	//	endDate = endDateAndLocation[0]
-	//	location = endDateAndLocation[1]
-	//} else {
-	//	endDate = endDateAndLocation[0]
-	//}
-	//
-	////jobGroups
-	//var jobGroups []string
-	//card.Find(".list_tag>a").Each(func(i int, s *goquery.Selection) {
-	//	jobGroup, _ := s.Attr("data-code")
-	//	jobGroups = append(jobGroups, jobGroup)
-	//})
-	////company, jobType
-	//var companyAndJobType []string
-	//card.Find(".item_subinfo>dd").Each(func(i int, s *goquery.Selection) {
-	//	companyAndJobType = append(companyAndJobType, s.Text())
-	//})
-	//company := companyAndJobType[0]
-	//jobType := companyAndJobType[1]
-	//
-	//c <- kakaoJob{Title: title, EndDate: endDate, Location: location, JobGroups: jobGroups, Company: company, JobType: jobType, Url: fullLink, Id: id}
+	c <- lineJob{
+		Title:     title,
+		StartDate: startDate,
+		EndDate:   endDate,
+		Location:  location,
+		Company:   company,
+		Url:       fullLink,
+		Id:        id}
 
 }
-
-//
-//func extractId(link string) string {
-//	l1 := strings.Split(link, "?")[0]
-//	l2 := strings.Split(l1, "/")[2]
-//
-//	return l2
-//}
