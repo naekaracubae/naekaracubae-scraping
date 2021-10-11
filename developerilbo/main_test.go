@@ -20,3 +20,21 @@ func Test_전체_회사_스크래핑(t *testing.T) {
 	log.Println(lineJobs)
 	log.Println("전체_회사_스크래핑 finish")
 }
+
+func Test_DB_저장(t *testing.T) {
+	log.Println("DB_저장 start")
+
+	kakaoC := make(chan []kakaoJob)
+	lineC := make(chan []lineJob)
+	go jobscrapper.LineCrawling(lineC)
+	go jobscrapper.KakaoCrawling(kakaoC)
+	kakaoJobs := <-kakaoC
+	lineJobs := <-lineC
+
+	log.Println(kakaoJobs)
+	log.Println(lineJobs)
+
+	// TODO DB 저장 로직
+
+	log.Println("DB_저장 finish")
+}

@@ -10,15 +10,41 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	_ "github.com/go-sql-driver/mysql"
-	etc2 "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
-	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
+	etc "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
+	_struct "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
 	"log"
 	"time"
 )
 
-type kakaoExtractedJob = _struct2.Kakao
+type kakaoJob = _struct.Kakao
 
-func GetSecret() *_struct2.SecretManager {
+func CheckAndSaveKakaoJobs(kakaoJobs *[]kakaoJob) {
+	gobbyRdsSecret := GetSecret()
+
+	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
+		gobbyRdsSecret.User,
+		gobbyRdsSecret.Password,
+		gobbyRdsSecret.Host,
+		gobbyRdsSecret.Database)
+
+	// Initialize connection object.
+	db, err := sql.Open("mysql", connectionString)
+	etc.CheckErr(err)
+	defer db.Close()
+
+	// 테이블을 ID로 조회해서 없는 경우 DB에 새로 저장한다.
+	for _, kakaoJob := range *kakaoJobs {
+		if !IsJobExist(&kakaoJob, db) {
+			SaveJob(&kakaoJob, db)
+		} else {
+			// 이미 존재하면, 마지막 있었던 날짜(LAST_EXIST_DATE) 최신화 시켜주기.
+			// 메일 보낼때, LAST_EXIST_DATE가 오늘 날짜인 ROW 만 전송한다.
+			UpdateLastExistDate(&kakaoJob, db)
+		}
+	}
+}
+
+func GetSecret() *_struct.SecretManager {
 	secretName := "GOBBY_RDS_SECRETS"
 	region := "ap-northeast-2"
 
@@ -81,79 +107,15 @@ func GetSecret() *_struct2.SecretManager {
 	}
 
 	// Your code goes here.
-	var gobbyRdsSecret = _struct2.SecretManager{}
+	var gobbyRdsSecret = _struct.SecretManager{}
 	jsonErr := json.Unmarshal([]byte(secretString), &gobbyRdsSecret)
-	etc2.CheckErr(jsonErr)
+	etc.CheckErr(jsonErr)
 
 	return &gobbyRdsSecret
 
 }
 
-func GetSubscribers() []_struct2.Subscriber {
-	gobbyRdsSecret := GetSecret()
-
-	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
-		gobbyRdsSecret.User,
-		gobbyRdsSecret.Password,
-		gobbyRdsSecret.Host,
-		gobbyRdsSecret.Database)
-
-	// Initialize connection object.
-	db, err := sql.Open("mysql", connectionString)
-	etc2.CheckErr(err)
-	defer db.Close()
-
-	query := "SELECT name, email from subscribers;"
-	//query := "SELECT name, email from test_subscribers;"
-
-	rows, err := db.Query(query)
-	etc2.CheckErr(err)
-	defer rows.Close()
-	fmt.Println("Reading data:")
-	var subscribers []_struct2.Subscriber
-
-	err = rows.Err()
-	etc2.CheckErr(err)
-
-	for rows.Next() {
-		subscriber := _struct2.Subscriber{}
-		err := rows.Scan(&subscriber.Name, &subscriber.Email)
-		etc2.CheckErr(err)
-		subscribers = append(subscribers, subscriber)
-	}
-
-	return subscribers
-}
-
-func CheckAndSaveJob(kakaoJobs *[]kakaoExtractedJob) {
-
-	gobbyRdsSecret := GetSecret()
-
-	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
-		gobbyRdsSecret.User,
-		gobbyRdsSecret.Password,
-		gobbyRdsSecret.Host,
-		gobbyRdsSecret.Database)
-
-	// Initialize connection object.
-	db, err := sql.Open("mysql", connectionString)
-	etc2.CheckErr(err)
-	defer db.Close()
-
-	// 테이블을 ID로 조회해서 없는 경우 DB에 새로 저장한다.
-	for _, kakaoJob := range *kakaoJobs {
-		if !IsJobExist(&kakaoJob, db) {
-			SaveJob(&kakaoJob, db)
-		} else {
-			// 이미 존재하면, 마지막 있었던 날짜(LAST_EXIST_DATE) 최신화 시켜주기.
-			// 메일 보낼때, LAST_EXIST_DATE가 오늘 날짜인 ROW 만 전송한다.
-			UpdateLastExistDate(&kakaoJob, db)
-		}
-	}
-
-}
-
-func UpdateLastExistDate(kakaoJob *kakaoExtractedJob, db *sql.DB) bool {
+func UpdateLastExistDate(kakaoJob *kakaoJob, db *sql.DB) bool {
 	today := time.Now().Format("2006-01-02")
 	result, err := db.Exec("UPDATE jobs SET LAST_EXIST_DATE=? WHERE ID=?", today, kakaoJob.Id)
 	if err != nil {
@@ -169,7 +131,7 @@ func UpdateLastExistDate(kakaoJob *kakaoExtractedJob, db *sql.DB) bool {
 	return false
 }
 
-func IsJobExist(kakaoJobs *kakaoExtractedJob, db *sql.DB) bool {
+func IsJobExist(kakaoJobs *kakaoJob, db *sql.DB) bool {
 
 	id := kakaoJobs.Id
 
@@ -183,7 +145,7 @@ func IsJobExist(kakaoJobs *kakaoExtractedJob, db *sql.DB) bool {
 	return true
 }
 
-func SaveJob(kakaoJobs *kakaoExtractedJob, db *sql.DB) bool {
+func SaveJob(kakaoJobs *kakaoJob, db *sql.DB) bool {
 	today := time.Now().Format("2006-01-02")
 	result, err := db.Exec("INSERT INTO jobs VALUES (?, ?, ?, ?, ?, ?, ?, ?)", kakaoJobs.Id, kakaoJobs.Company, kakaoJobs.Url, kakaoJobs.EndDate, today, kakaoJobs.Location, kakaoJobs.Title, today)
 	if err != nil {
@@ -197,4 +159,40 @@ func SaveJob(kakaoJobs *kakaoExtractedJob, db *sql.DB) bool {
 	}
 
 	return false
+}
+
+func GetSubscribers() []_struct.Subscriber {
+	gobbyRdsSecret := GetSecret()
+
+	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
+		gobbyRdsSecret.User,
+		gobbyRdsSecret.Password,
+		gobbyRdsSecret.Host,
+		gobbyRdsSecret.Database)
+
+	// Initialize connection object.
+	db, err := sql.Open("mysql", connectionString)
+	etc.CheckErr(err)
+	defer db.Close()
+
+	query := "SELECT name, email from subscribers;"
+	//query := "SELECT name, email from test_subscribers;"
+
+	rows, err := db.Query(query)
+	etc.CheckErr(err)
+	defer rows.Close()
+	fmt.Println("Reading data:")
+	var subscribers []_struct.Subscriber
+
+	err = rows.Err()
+	etc.CheckErr(err)
+
+	for rows.Next() {
+		subscriber := _struct.Subscriber{}
+		err := rows.Scan(&subscriber.Name, &subscriber.Email)
+		etc.CheckErr(err)
+		subscribers = append(subscribers, subscriber)
+	}
+
+	return subscribers
 }

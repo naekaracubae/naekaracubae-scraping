@@ -9,7 +9,7 @@ import (
 func Test_라인_전체_스크래핑(t *testing.T) {
 	log.Println("Test_라인_전체_스크래핑 start")
 
-	lineC := make(chan []lineJob)
+	lineC := make(chan []job)
 	go LineCrawling(lineC)
 	lineJobs := <-lineC
 

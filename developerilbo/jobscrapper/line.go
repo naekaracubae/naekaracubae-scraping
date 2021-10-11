@@ -11,12 +11,12 @@ import (
 
 var linebaseURL = "https://careers.linecorp.com/ko/jobs"
 
-type lineJob = _struct.Line
+type job = _struct.Job
 
 // 한 페이지 단위 전체 직무 스크래핑
-func LineCrawling(lineC chan<- []lineJob) {
+func LineCrawling(lineC chan<- []job) {
 	log.Println("LineCrawling start")
-	var jobs []lineJob
+	var jobs []job
 
 	res, err := http.Get(linebaseURL)
 	etc.CheckErr(err)
@@ -30,7 +30,7 @@ func LineCrawling(lineC chan<- []lineJob) {
 
 	searchCards := doc.Find(".job_list>li")
 
-	c := make(chan lineJob)
+	c := make(chan job)
 	searchCards.Each(func(i int, card *goquery.Selection) {
 		go LineExtractJob(card, c, i)
 	})
@@ -54,7 +54,7 @@ func LineCrawling(lineC chan<- []lineJob) {
 }
 
 // 직무 하나 단위 스크래핑
-func LineExtractJob(card *goquery.Selection, c chan<- lineJob, idx int) {
+func LineExtractJob(card *goquery.Selection, c chan<- job, idx int) {
 	log.Println(idx, "th LineExtractJob start")
 	// infos
 	infos := card.Find(".text_filter").Text()
@@ -99,7 +99,7 @@ func LineExtractJob(card *goquery.Selection, c chan<- lineJob, idx int) {
 		fullLink, ",",
 		id, "]")
 
-	c <- lineJob{
+	c <- job{
 		Title:     title,
 		StartDate: startDate,
 		EndDate:   endDate,

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	aws2 "github.com/msyhu/GobbyIsntFree/developerilbo/aws"
+	aws "github.com/msyhu/GobbyIsntFree/developerilbo/aws"
 	jobscrapper "github.com/msyhu/GobbyIsntFree/developerilbo/jobscrapper"
 	_struct "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
 )
@@ -23,13 +23,13 @@ func jobscrapping() string {
 	fmt.Println(kakaoJobs)
 
 	// DB 저장하기
-	aws2.CheckAndSaveJob(&kakaoJobs)
+	aws.CheckAndSaveKakaoJobs(&kakaoJobs)
 
 	contents := jobscrapper.MakeHtmlBody()
 
 	// 메일 보내기 : 함수 하나로 만들것
-	subscribers := aws2.GetSubscribers()
-	sendMailResult := aws2.SendMail(contents, subscribers)
+	subscribers := aws.GetSubscribers()
+	sendMailResult := aws.SendMail(contents, subscribers)
 
 	return sendMailResult
 }
