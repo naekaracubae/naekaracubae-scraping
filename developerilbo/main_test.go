@@ -1,20 +1,22 @@
 package main
 
 import (
-	"fmt"
-	jobscrapper2 "github.com/msyhu/GobbyIsntFree/developerilbo/jobscrapper"
+	jobscrapper "github.com/msyhu/GobbyIsntFree/developerilbo/jobscrapper"
+	"log"
 	"testing"
 )
 
-func TestJobscrapping(t *testing.T) {
+func Test_전체_회사_스크래핑(t *testing.T) {
+	log.Println("전체_회사_스크래핑 start")
 
-	kakaoC := make(chan []kakaoExtractedJob)
-	lineC := make(chan []lineExtractedJob)
-	go jobscrapper2.LineCrawling(lineC)
-	go jobscrapper2.KakaoCrawling(kakaoC)
+	kakaoC := make(chan []kakaoJob)
+	lineC := make(chan []lineJob)
+	go jobscrapper.LineCrawling(lineC)
+	go jobscrapper.KakaoCrawling(kakaoC)
 	kakaoJobs := <-kakaoC
 	lineJobs := <-lineC
 
-	fmt.Println(kakaoJobs)
-	fmt.Println(lineJobs)
+	log.Println(kakaoJobs)
+	log.Println(lineJobs)
+	log.Println("전체_회사_스크래핑 finish")
 }

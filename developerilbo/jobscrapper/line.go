@@ -2,8 +2,9 @@ package jobscrapper
 
 import (
 	"github.com/PuerkitoBio/goquery"
-	etc2 "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
+	etc "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
 	_struct "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -12,26 +13,30 @@ var linebaseURL = "https://careers.linecorp.com/ko/jobs"
 
 type lineJob = _struct.Line
 
+// 한 페이지 단위 전체 직무 스크래핑
 func LineCrawling(lineC chan<- []lineJob) {
-	//fmt.Println("line start!!")
+	log.Println("LineCrawling start")
 	var jobs []lineJob
 
 	res, err := http.Get(linebaseURL)
-	etc2.CheckErr(err)
-	etc2.CheckCode(res)
+	etc.CheckErr(err)
+	etc.CheckCode(res)
+	log.Println("response : ", res)
 
 	defer res.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
-	etc2.CheckErr(err)
+	etc.CheckErr(err)
 
 	searchCards := doc.Find(".job_list>li")
 
 	c := make(chan lineJob)
 	searchCards.Each(func(i int, card *goquery.Selection) {
-		go LineExtractJob(card, c)
+		go LineExtractJob(card, c, i)
 	})
 
+	// Engineering만 뽑아내서 그 횟수만큼만 반복문을 통해 채널에서 빼내야 한다.
+	// 이렇게 필터링 안 하면 계속 채널에서 뽑아내려고 하기 때문에 프로그램이 종료 안 됨.
 	countEngineering := 0
 	searchCards.Each(func(i int, card *goquery.Selection) {
 		infos := card.Find(".text_filter").Text()
@@ -42,14 +47,15 @@ func LineCrawling(lineC chan<- []lineJob) {
 
 	for i := 0; i < countEngineering; i++ {
 		job := <-c
-		//fmt.Println(job)
 		jobs = append(jobs, job)
 	}
 
 	lineC <- jobs
 }
 
-func LineExtractJob(card *goquery.Selection, c chan<- lineJob) {
+// 직무 하나 단위 스크래핑
+func LineExtractJob(card *goquery.Selection, c chan<- lineJob, idx int) {
+	log.Println(idx, "th LineExtractJob start")
 	// infos
 	infos := card.Find(".text_filter").Text()
 	if strings.Contains(infos, "Engineering") == false {
@@ -84,7 +90,14 @@ func LineExtractJob(card *goquery.Selection, c chan<- lineJob) {
 
 	// id
 	id := strings.Split(link, "/")[3]
-	//fmt.Println(location, ",", company, ",", title, ",", startDate, ",", endDate, ",", fullLink, ",", id)
+	log.Println(idx, "th result : [",
+		location, ",",
+		company, ",",
+		title, ",",
+		startDate, ",",
+		endDate, ",",
+		fullLink, ",",
+		id, "]")
 
 	c <- lineJob{
 		Title:     title,
