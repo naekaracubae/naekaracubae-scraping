@@ -2,18 +2,22 @@ package jobscrapper
 
 import (
 	"github.com/PuerkitoBio/goquery"
-	etc2 "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
-	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
+	etc "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
+	_struct "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
-var kakaobaseURL string = "https://careers.kakao.com/jobs?part=TECHNOLOGY&company=ALL"
+var kakaobaseURL = "https://careers.kakao.com/jobs?part=TECHNOLOGY&company=ALL"
 
-type kakaoJob = _struct2.Kakao
+type kakaoJob = _struct.Kakao
 
+// 카카오 크롤링 수행하는 메인문
 func KakaoCrawling(kakaoC chan<- []kakaoJob) {
+	log.Println("KakaoCrawling start")
+
 	var jobs []kakaoJob
 	c := make(chan []kakaoJob)
 
@@ -29,49 +33,49 @@ func KakaoCrawling(kakaoC chan<- []kakaoJob) {
 	}
 
 	kakaoC <- jobs
+	log.Println("KakaoCrawling finished")
 }
 
-// 페이지 수를 가져온다
+// 전체 페이지 수를 가져온다
 func KakaoGetPages() int {
-	//lastPage := 1
 	res, err := http.Get(kakaobaseURL)
-	etc2.CheckErr(err)
-	etc2.CheckCode(res)
+	etc.CheckErr(err)
+	etc.CheckCode(res)
 
 	defer res.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
-	etc2.CheckErr(err)
+	etc.CheckErr(err)
 
 	pageSelection := doc.Find(".paging_list").Find("a")
 	lastPageHref, _ := pageSelection.Last().Attr("href")
 	lastPage := strings.Split(lastPageHref, "=")[1]
 	page, err := strconv.Atoi(lastPage)
-	etc2.CheckErr(err)
+	etc.CheckErr(err)
 
-	// 양쪽 화살표 4개 빼주고 현재 페이지 1 더해줌
 	return page
 }
 
-// 하나의 페이지에서 직무를 가져와서 하나씩 채널로 넘겨준다.
+// 한 페이지 단위 전체 직무 스크래핑
 func KakaoGetPage(page int, mainC chan<- []kakaoJob) {
+	log.Println(page, "page KakaoGetPage start")
+
 	var jobs []kakaoJob
 	c := make(chan kakaoJob)
 	pageURL := kakaobaseURL + "&page=" + strconv.Itoa(page)
-	//fmt.Println(pageURL)
 	res, err := http.Get(pageURL)
-	etc2.CheckErr(err)
-	etc2.CheckCode(res)
+	etc.CheckErr(err)
+	etc.CheckCode(res)
 
 	defer res.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
-	etc2.CheckErr(err)
+	etc.CheckErr(err)
 
 	searchCards := doc.Find(".list_jobs>li")
 
 	searchCards.Each(func(i int, card *goquery.Selection) {
-		go KakaoExtractJob(card, c)
+		go KakaoExtractJob(card, c, i, page)
 	})
 
 	for i := 0; i < searchCards.Length(); i++ {
@@ -83,7 +87,10 @@ func KakaoGetPage(page int, mainC chan<- []kakaoJob) {
 
 }
 
-func KakaoExtractJob(card *goquery.Selection, c chan<- kakaoJob) {
+// 직무 하나 단위 스크래핑
+func KakaoExtractJob(card *goquery.Selection, c chan<- kakaoJob, idx int, page int) {
+	log.Println(page, "page ", idx, "th KakaoExtractJob start")
+
 	// title
 	title := card.Find(".tit_jobs").Text()
 
@@ -122,7 +129,24 @@ func KakaoExtractJob(card *goquery.Selection, c chan<- kakaoJob) {
 	company := companyAndJobType[0]
 	jobType := companyAndJobType[1]
 
-	c <- kakaoJob{Title: title, EndDate: endDate, Location: location, JobGroups: jobGroups, Company: company, JobType: jobType, Url: fullLink, Id: id}
+	log.Println(page, "page ", idx, "th result : [",
+		title, ",",
+		endDate, ",",
+		location, ",",
+		jobGroups, ",",
+		company, ",",
+		fullLink, ",",
+		id, "]")
+
+	c <- kakaoJob{
+		Title:     title,
+		EndDate:   endDate,
+		Location:  location,
+		JobGroups: jobGroups,
+		Company:   company,
+		JobType:   jobType,
+		Url:       fullLink,
+		Id:        id}
 
 }
 

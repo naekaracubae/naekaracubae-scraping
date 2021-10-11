@@ -2,35 +2,40 @@ package jobscrapper_test
 
 import (
 	"fmt"
-	jobscrapper2 "github.com/msyhu/GobbyIsntFree/developerilbo/jobscrapper"
-	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
+	jobscrapper "github.com/msyhu/GobbyIsntFree/developerilbo/jobscrapper"
+	_struct "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
+	"log"
 	"testing"
 )
 
-type kakaoJob = _struct2.Kakao
+type kakaoJob = _struct.Kakao
 
-func TestKakaoGetPages(t *testing.T) {
-	pages := jobscrapper2.KakaoGetPages()
+func Test_카카오_전체_페이지수(t *testing.T) {
+	log.Println("Test_카카오_전체_페이지수 start")
+	pages := jobscrapper.KakaoGetPages()
 	fmt.Println(pages)
 
 	if pages != 16 {
 		t.Error("Wrong result", pages)
 	}
+	log.Println("Test_카카오_전체_페이지수 finish")
 }
 
-func TestKakaoGetPage(t *testing.T) {
+func Test_카카오_한페이지_스크래핑(t *testing.T) {
+	log.Println("Test_카카오_한페이지_스크래핑 start")
 	c := make(chan []kakaoJob)
-	jobscrapper2.KakaoGetPage(1, c)
-
+	jobscrapper.KakaoGetPage(1, c)
+	log.Println("Test_카카오_한페이지_스크래핑 finish")
 }
 
-func TestKakaoCrawling(t *testing.T) {
+func Test_카카오_전체_스크래핑(t *testing.T) {
+	log.Println("Test_카카오_전체_스크래핑 start")
 	var jobs []kakaoJob
 	c := make(chan []kakaoJob)
 
-	totalPages := jobscrapper2.KakaoGetPages()
+	totalPages := jobscrapper.KakaoGetPages()
 	for i := 1; i <= totalPages; i++ {
-		go jobscrapper2.KakaoGetPage(i, c)
+		go jobscrapper.KakaoGetPage(i, c)
 	}
 
 	for i := 0; i < totalPages; i++ {
@@ -41,5 +46,5 @@ func TestKakaoCrawling(t *testing.T) {
 	for _, job := range jobs {
 		fmt.Println(job)
 	}
-
+	log.Println("Test_카카오_전체_스크래핑 finish")
 }
