@@ -3,9 +3,9 @@ package jobscrapper
 import (
 	"database/sql"
 	"fmt"
-	aws2 "github.com/msyhu/GobbyIsntFree/developerilbo/aws"
-	etc2 "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
-	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
+	aws2 "github.com/msyhu/naekaracubae-scraping/developerilbo/aws"
+	etc2 "github.com/msyhu/naekaracubae-scraping/developerilbo/etc"
+	_struct2 "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
 	"log"
 	"time"
 )

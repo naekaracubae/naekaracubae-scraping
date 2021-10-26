@@ -2,19 +2,20 @@ package jobscrapper
 
 import (
 	"github.com/PuerkitoBio/goquery"
-	etc "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
-	_struct "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
+	etc "github.com/msyhu/naekaracubae-scraping/developerilbo/etc"
+	_struct "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var kakaobaseURL = "https://careers.kakao.com/jobs?part=TECHNOLOGY&company=ALL"
 
 type kakaoJob = _struct.Kakao
 
-// 카카오 크롤링 수행하는 메인문
+// KakaoCrawling 카카오 크롤링 수행하는 메인문
 func KakaoCrawling(kakaoC chan<- []kakaoJob) {
 	log.Println("KakaoCrawling start")
 
@@ -36,7 +37,7 @@ func KakaoCrawling(kakaoC chan<- []kakaoJob) {
 	log.Println("KakaoCrawling finished")
 }
 
-// 전체 페이지 수를 가져온다
+// KakaoGetPages 전체 페이지 수를 가져온다
 func KakaoGetPages() int {
 	res, err := http.Get(kakaobaseURL)
 	etc.CheckErr(err)
@@ -56,7 +57,7 @@ func KakaoGetPages() int {
 	return page
 }
 
-// 한 페이지 단위 전체 직무 스크래핑
+// KakaoGetPage 한 페이지 단위 전체 직무 스크래핑
 func KakaoGetPage(page int, mainC chan<- []kakaoJob) {
 	log.Println(page, "page KakaoGetPage start")
 
@@ -68,7 +69,6 @@ func KakaoGetPage(page int, mainC chan<- []kakaoJob) {
 	etc.CheckCode(res)
 
 	defer res.Body.Close()
-
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	etc.CheckErr(err)
 
@@ -87,7 +87,7 @@ func KakaoGetPage(page int, mainC chan<- []kakaoJob) {
 
 }
 
-// 직무 하나 단위 스크래핑
+// KakaoExtractJob 직무 하나 단위 스크래핑
 func KakaoExtractJob(card *goquery.Selection, c chan<- kakaoJob, idx int, page int) {
 	log.Println(page, "page ", idx, "th KakaoExtractJob start")
 
@@ -127,7 +127,6 @@ func KakaoExtractJob(card *goquery.Selection, c chan<- kakaoJob, idx int, page i
 		companyAndJobType = append(companyAndJobType, s.Text())
 	})
 	company := companyAndJobType[0]
-	jobType := companyAndJobType[1]
 
 	log.Println(page, "page ", idx, "th result : [",
 		title, ",",
@@ -138,13 +137,14 @@ func KakaoExtractJob(card *goquery.Selection, c chan<- kakaoJob, idx int, page i
 		fullLink, ",",
 		id, "]")
 
+	// 카카오에는 시작시간이 없어서, 이 시점에서는 임시로 오늘 날짜로 다 통일함.
+	today := time.Now().Format("2006-01-02")
 	c <- kakaoJob{
 		Title:     title,
+		StartDate: today,
 		EndDate:   endDate,
 		Location:  location,
-		JobGroups: jobGroups,
 		Company:   company,
-		JobType:   jobType,
 		Url:       fullLink,
 		Id:        id}
 

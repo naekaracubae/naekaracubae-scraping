@@ -2,8 +2,8 @@ package jobscrapper
 
 import (
 	"github.com/PuerkitoBio/goquery"
-	etc "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
-	_struct "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
+	etc "github.com/msyhu/naekaracubae-scraping/developerilbo/etc"
+	_struct "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
 	"log"
 	"net/http"
 	"strings"

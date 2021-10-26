@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	aws2 "github.com/msyhu/GobbyIsntFree/developerilbo/aws"
-	jobscrapper "github.com/msyhu/GobbyIsntFree/developerilbo/jobscrapper"
-	_struct "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
+	aws2 "github.com/msyhu/naekaracubae-scraping/developerilbo/aws"
+	jobscrapper "github.com/msyhu/naekaracubae-scraping/developerilbo/jobscrapper"
+	_struct "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
 )
 
 type kakaoJob = _struct.Kakao

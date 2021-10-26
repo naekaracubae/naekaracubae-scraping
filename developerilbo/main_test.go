@@ -1,7 +1,7 @@
 package main
 
 import (
-	jobscrapper "github.com/msyhu/GobbyIsntFree/developerilbo/jobscrapper"
+	"github.com/msyhu/naekaracubae-scraping/developerilbo/jobscrapper"
 	"log"
 	"testing"
 )

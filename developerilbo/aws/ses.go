@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
-	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
+	_struct2 "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
 )
 
 const (

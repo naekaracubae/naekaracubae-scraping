@@ -1,4 +1,4 @@
-module github.com/msyhu/GobbyIsntFree
+module github.com/msyhu/naekaracubae-scraping
 
 go 1.16
 

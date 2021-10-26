@@ -3,8 +3,8 @@ package jobscrapper
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	etc2 "github.com/msyhu/GobbyIsntFree/developerilbo/etc"
-	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
+	etc2 "github.com/msyhu/naekaracubae-scraping/developerilbo/etc"
+	_struct2 "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
 	"net/http"
 	"strconv"
 )

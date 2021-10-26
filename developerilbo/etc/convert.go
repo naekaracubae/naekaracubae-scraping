@@ -2,7 +2,7 @@ package etc
 
 import (
 	"encoding/json"
-	_struct2 "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
+	_struct2 "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
 	"strconv"
 	"strings"
 )

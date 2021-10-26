@@ -2,7 +2,7 @@ package jobscrapper_test
 
 import (
 	"fmt"
-	jobscrapper2 "github.com/msyhu/GobbyIsntFree/developerilbo/jobscrapper"
+	jobscrapper2 "github.com/msyhu/naekaracubae-scraping/developerilbo/jobscrapper"
 	"testing"
 )
 

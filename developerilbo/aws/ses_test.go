@@ -1,7 +1,7 @@
 package aws_test
 
 import (
-	aws2 "github.com/msyhu/GobbyIsntFree/developerilbo/aws"
+	aws2 "github.com/msyhu/naekaracubae-scraping/developerilbo/aws"
 	"testing"
 )
 

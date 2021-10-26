@@ -2,8 +2,8 @@ package jobscrapper_test
 
 import (
 	"fmt"
-	jobscrapper "github.com/msyhu/GobbyIsntFree/developerilbo/jobscrapper"
-	_struct "github.com/msyhu/GobbyIsntFree/developerilbo/struct"
+	jobscrapper "github.com/msyhu/naekaracubae-scraping/developerilbo/jobscrapper"
+	_struct "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
 	"log"
 	"testing"
 )
