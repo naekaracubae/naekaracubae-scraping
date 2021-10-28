@@ -16,11 +16,16 @@ func main() {
 
 func jobscrapping() string {
 	// 크롤링하기
+	// 카카오
 	kakaoC := make(chan []kakaoJob)
 	go jobscrapper.KakaoCrawling(kakaoC)
 	kakaoJobs := <-kakaoC
-
 	fmt.Println(kakaoJobs)
+	// 라인
+	lineC := make(chan []lineJob)
+	go jobscrapper.LineCrawling(lineC)
+	lineJobs := <-lineC
+	fmt.Println(lineJobs)
 
 	// DB 저장하기
 	aws2.CheckAndSaveJob(&kakaoJobs)
