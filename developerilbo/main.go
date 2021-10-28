@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	aws2 "github.com/msyhu/naekaracubae-scraping/developerilbo/aws"
+	aws "github.com/msyhu/naekaracubae-scraping/developerilbo/aws"
 	jobscrapper "github.com/msyhu/naekaracubae-scraping/developerilbo/jobscrapper"
 	_struct "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
 )
@@ -14,6 +14,7 @@ func main() {
 	jobscrapping()
 }
 
+// TODO: 회사마다 크롤링, db저장, body 만들기 메서드를 따로 만들어 주었다. 추상화해서 하나로 합칠 수 없을까?
 func jobscrapping() string {
 	// 크롤링하기
 	// 카카오
@@ -28,13 +29,15 @@ func jobscrapping() string {
 	fmt.Println(lineJobs)
 
 	// DB 저장하기
-	aws2.CheckAndSaveJob(&kakaoJobs)
+	// 카카오
+	aws.CheckAndSaveJob(&kakaoJobs)
+	// 라인
+	aws.CheckAndSaveJobForLine(&lineJobs)
 
 	contents := jobscrapper.MakeHtmlBody()
 
-	// 메일 보내기 : 함수 하나로 만들것
-	subscribers := aws2.GetSubscribers()
-	sendMailResult := aws2.SendMail(contents, subscribers)
+	subscribers := aws.GetSubscribers()
+	sendMailResult := aws.SendMail(contents, subscribers)
 
 	return sendMailResult
 }

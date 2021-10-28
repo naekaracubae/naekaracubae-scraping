@@ -17,6 +17,7 @@ import (
 )
 
 type kakaoExtractedJob = _struct2.Kakao
+type lineExtractedJob = _struct2.Line
 
 func GetSecret() *_struct2.SecretManager {
 	secretName := "GOBBY_RDS_SECRETS"
@@ -147,13 +148,13 @@ func CheckAndSaveJob(kakaoJobs *[]kakaoExtractedJob) {
 		} else {
 			// 이미 존재하면, 마지막 있었던 날짜(LAST_EXIST_DATE) 최신화 시켜주기.
 			// 메일 보낼때, LAST_EXIST_DATE가 오늘 날짜인 ROW 만 전송한다.
-			UpdateLastExistDate(&kakaoJob, db)
+			updateLastExistDate(&kakaoJob, db)
 		}
 	}
 
 }
 
-func UpdateLastExistDate(kakaoJob *kakaoExtractedJob, db *sql.DB) bool {
+func updateLastExistDate(kakaoJob *kakaoExtractedJob, db *sql.DB) bool {
 	today := time.Now().Format("2006-01-02")
 	result, err := db.Exec("UPDATE jobs SET LAST_EXIST_DATE=? WHERE ID=?", today, kakaoJob.Id)
 	if err != nil {
