@@ -11,11 +11,6 @@ import (
 
 type kakaoJob = _struct2.Kakao
 
-func TestGetSubscribers(t *testing.T) {
-	subscribers := aws2.GetSubscribers()
-	fmt.Println(subscribers)
-}
-
 var testKakaoStruct = kakaoJob{
 	Title:    "test",
 	EndDate:  "채용시까지",
@@ -26,7 +21,7 @@ var testKakaoStruct = kakaoJob{
 	Id:       "P-9349",
 }
 
-func TestIsJobExist(t *testing.T) {
+func Test_IsJobExistForKakao(t *testing.T) {
 
 	gobbyRdsSecret := aws2.GetSecret()
 
@@ -48,7 +43,7 @@ func TestIsJobExist(t *testing.T) {
 	}
 }
 
-func TestSaveJob(t *testing.T) {
+func Test_SaveJobForKakao(t *testing.T) {
 	gobbyRdsSecret := aws2.GetSecret()
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
@@ -69,7 +64,7 @@ func TestSaveJob(t *testing.T) {
 	}
 }
 
-func TestGetSecret(t *testing.T) {
+func Test_GetSecretForKakao(t *testing.T) {
 	gobbyRdsSecret := aws2.GetSecret()
 	fmt.Println(gobbyRdsSecret)
 
