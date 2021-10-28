@@ -30,7 +30,7 @@ func jobscrapping() string {
 
 	// DB 저장하기
 	// 카카오
-	aws.CheckAndSaveJob(&kakaoJobs)
+	aws.CheckAndSaveJobForKakao(&kakaoJobs)
 	// 라인
 	aws.CheckAndSaveJobForLine(&lineJobs)
 

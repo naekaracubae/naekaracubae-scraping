@@ -41,7 +41,7 @@ func TestIsJobExist(t *testing.T) {
 	etc2.CheckErr(err)
 	defer db.Close()
 
-	result := aws2.IsJobExist(&testKakaoStruct, db)
+	result := aws2.IsJobExistForKakao(&testKakaoStruct, db)
 
 	if result != true {
 		t.Error("Wrong result")
@@ -62,7 +62,7 @@ func TestSaveJob(t *testing.T) {
 	etc2.CheckErr(err)
 	defer db.Close()
 
-	result := aws2.SaveJob(&testKakaoStruct, db)
+	result := aws2.SaveJobForKakao(&testKakaoStruct, db)
 
 	if result != true {
 		t.Error("Wrong result")
