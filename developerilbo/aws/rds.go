@@ -17,7 +17,6 @@ import (
 )
 
 type kakaoExtractedJob = _struct2.Kakao
-type lineExtractedJob = _struct2.Line
 
 func GetSecret() *_struct2.SecretManager {
 	secretName := "GOBBY_RDS_SECRETS"
