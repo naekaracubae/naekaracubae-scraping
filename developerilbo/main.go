@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	aws "github.com/msyhu/naekaracubae-scraping/developerilbo/aws"
-	jobscrapper "github.com/msyhu/naekaracubae-scraping/developerilbo/jobscrapper"
+	"github.com/msyhu/naekaracubae-scraping/developerilbo/aws"
+	"github.com/msyhu/naekaracubae-scraping/developerilbo/jobscrapper"
 	_struct "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
 )
 
