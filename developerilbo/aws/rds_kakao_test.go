@@ -63,12 +63,3 @@ func Test_SaveJobForKakao(t *testing.T) {
 		t.Error("Wrong result")
 	}
 }
-
-func Test_GetSecretForKakao(t *testing.T) {
-	gobbyRdsSecret := aws2.GetSecret()
-	fmt.Println(gobbyRdsSecret)
-
-	if gobbyRdsSecret == nil {
-		t.Error("Wrong result")
-	}
-}
