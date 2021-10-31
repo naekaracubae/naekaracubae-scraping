@@ -22,7 +22,7 @@ const (
 func SendMail(contents *string, subscribers []_struct2.Subscriber) string {
 	// The subject line for the email.
 	var today = time.Now().Format("2006-01-02")
-	Subject := "[네,카라쿠배] " + today + " 자 개발자 채용 일보📰 가 도착했습니다!"
+	Subject := "[네,카라쿠배] " + today + " 개발자 채용 일보가 도착했습니다!👩‍💻"
 
 	// Create a new session in the us-west-2 region.
 	// Replace us-west-2 with the AWS Region you're using for Amazon SES.
