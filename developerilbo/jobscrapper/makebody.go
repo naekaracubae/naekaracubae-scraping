@@ -75,10 +75,10 @@ func MakeHtmlBody() *string {
 	contents += "</ul>"
 
 	// 그외 기존 job 조회
+	contents += "<h2>기존 채용</h2>"
 	// 카카오
 	// 기존 job body 만들어주기
 	notTodayQuery := "SELECT * FROM jobs WHERE START_DATE <> '" + today + "' AND LAST_EXIST_DATE = '" + today + "'"
-	contents += "<h2>기존 채용</h2>"
 	contents += "<h3>카카오</h3><ul>"
 	beforeRows, err := db.Query(notTodayQuery)
 	etc2.CheckErr(err)
@@ -86,6 +86,28 @@ func MakeHtmlBody() *string {
 	for beforeRows.Next() {
 		var tempJob _struct2.Kakao
 		err := beforeRows.Scan(&tempJob.Id, &tempJob.Company, &tempJob.Url, &tempJob.EndDate, &tempJob.StartDate, &tempJob.Location, &tempJob.Title, &tempJob.LastExistDate)
+		if err != nil {
+			log.Fatal(err)
+		}
+		rowHTML := "<li>" +
+			"<a href='" + tempJob.Url + "'>" +
+			tempJob.Title +
+			"</a>" +
+			"</li>"
+		contents += rowHTML
+	}
+	contents += "</ul>"
+
+	// 라인
+	// 기존 job body 만들어주기
+	notTodayQueryForLine := "SELECT * FROM LINE WHERE START_DATE <> '" + today + "' AND LAST_EXIST_DATE = '" + today + "'"
+	contents += "<h3>라인</h3><ul>"
+	beforeRowsForLine, err := db.Query(notTodayQueryForLine)
+	etc2.CheckErr(err)
+	defer beforeRowsForLine.Close()
+	for beforeRowsForLine.Next() {
+		var tempJob _struct2.Line
+		err := beforeRowsForLine.Scan(&tempJob.Id, &tempJob.Company, &tempJob.Url, &tempJob.EndDate, &tempJob.StartDate, &tempJob.Location, &tempJob.Title, &tempJob.LastExistDate)
 		if err != nil {
 			log.Fatal(err)
 		}
