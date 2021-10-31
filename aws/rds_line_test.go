@@ -3,10 +3,10 @@ package aws_test
 import (
 	"database/sql"
 	"fmt"
-	aws2 "github.com/msyhu/naekaracubae-scraping/developerilbo/aws"
-	etc2 "github.com/msyhu/naekaracubae-scraping/developerilbo/etc"
-	"github.com/msyhu/naekaracubae-scraping/developerilbo/jobscrapper"
-	_struct2 "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
+	"github.com/msyhu/naekaracubae-scraping/aws"
+	etc2 "github.com/msyhu/naekaracubae-scraping/etc"
+	"github.com/msyhu/naekaracubae-scraping/jobscrapper"
+	_struct2 "github.com/msyhu/naekaracubae-scraping/struct"
 	"log"
 	"testing"
 )
@@ -24,7 +24,7 @@ var testLineStruct = lineJob{
 
 func Test_IsJobExistForLine(t *testing.T) {
 
-	gobbyRdsSecret := aws2.GetSecret()
+	gobbyRdsSecret := aws.GetSecret()
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
 		gobbyRdsSecret.User,
@@ -37,7 +37,7 @@ func Test_IsJobExistForLine(t *testing.T) {
 	etc2.CheckErr(err)
 	defer db.Close()
 
-	result := aws2.IsJobExistForLine(&testLineStruct, db)
+	result := aws.IsJobExistForLine(&testLineStruct, db)
 
 	if result != true {
 		t.Error("Wrong result")
@@ -45,7 +45,7 @@ func Test_IsJobExistForLine(t *testing.T) {
 }
 
 func Test_SaveJobForLine(t *testing.T) {
-	gobbyRdsSecret := aws2.GetSecret()
+	gobbyRdsSecret := aws.GetSecret()
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
 		gobbyRdsSecret.User,
@@ -58,7 +58,7 @@ func Test_SaveJobForLine(t *testing.T) {
 	etc2.CheckErr(err)
 	defer db.Close()
 
-	result := aws2.SaveJobForLine(&testLineStruct, db)
+	result := aws.SaveJobForLine(&testLineStruct, db)
 
 	if result != true {
 		t.Error("Wrong result")
@@ -73,6 +73,6 @@ func Test_CheckAndSaveJobForLine(t *testing.T) {
 	lineJobs := <-lineC
 	log.Println(lineJobs)
 
-	aws2.CheckAndSaveJobForLine(&lineJobs)
+	aws.CheckAndSaveJobForLine(&lineJobs)
 
 }

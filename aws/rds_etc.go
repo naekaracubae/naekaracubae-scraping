@@ -9,8 +9,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
-	etc2 "github.com/msyhu/naekaracubae-scraping/developerilbo/etc"
-	_struct2 "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
+	etc2 "github.com/msyhu/naekaracubae-scraping/etc"
+	_struct2 "github.com/msyhu/naekaracubae-scraping/struct"
 )
 
 func GetSecret() *_struct2.SecretManager {

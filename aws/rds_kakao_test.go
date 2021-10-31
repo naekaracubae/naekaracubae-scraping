@@ -3,9 +3,9 @@ package aws_test
 import (
 	"database/sql"
 	"fmt"
-	aws2 "github.com/msyhu/naekaracubae-scraping/developerilbo/aws"
-	etc2 "github.com/msyhu/naekaracubae-scraping/developerilbo/etc"
-	_struct2 "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
+	"github.com/msyhu/naekaracubae-scraping/aws"
+	etc2 "github.com/msyhu/naekaracubae-scraping/etc"
+	_struct2 "github.com/msyhu/naekaracubae-scraping/struct"
 	"testing"
 )
 
@@ -23,7 +23,7 @@ var testKakaoStruct = kakaoJob{
 
 func Test_IsJobExistForKakao(t *testing.T) {
 
-	gobbyRdsSecret := aws2.GetSecret()
+	gobbyRdsSecret := aws.GetSecret()
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
 		gobbyRdsSecret.User,
@@ -36,7 +36,7 @@ func Test_IsJobExistForKakao(t *testing.T) {
 	etc2.CheckErr(err)
 	defer db.Close()
 
-	result := aws2.IsJobExistForKakao(&testKakaoStruct, db)
+	result := aws.IsJobExistForKakao(&testKakaoStruct, db)
 
 	if result != true {
 		t.Error("Wrong result")
@@ -44,7 +44,7 @@ func Test_IsJobExistForKakao(t *testing.T) {
 }
 
 func Test_SaveJobForKakao(t *testing.T) {
-	gobbyRdsSecret := aws2.GetSecret()
+	gobbyRdsSecret := aws.GetSecret()
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
 		gobbyRdsSecret.User,
@@ -57,7 +57,7 @@ func Test_SaveJobForKakao(t *testing.T) {
 	etc2.CheckErr(err)
 	defer db.Close()
 
-	result := aws2.SaveJobForKakao(&testKakaoStruct, db)
+	result := aws.SaveJobForKakao(&testKakaoStruct, db)
 
 	if result != true {
 		t.Error("Wrong result")

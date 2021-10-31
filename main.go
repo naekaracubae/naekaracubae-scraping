@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/msyhu/naekaracubae-scraping/developerilbo/aws"
-	"github.com/msyhu/naekaracubae-scraping/developerilbo/jobscrapper"
-	_struct "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
+	aws2 "github.com/msyhu/naekaracubae-scraping/aws"
+	jobscrapper2 "github.com/msyhu/naekaracubae-scraping/jobscrapper"
+	"github.com/msyhu/naekaracubae-scraping/struct"
 )
 
 type kakaoJob = _struct.Kakao
@@ -23,11 +23,11 @@ func jobscrapping() string {
 	saveDB(kakaoJobs, lineJobs)
 
 	// 3. MAIL BODY 만들기
-	contents := jobscrapper.MakeHtmlBody()
+	contents := jobscrapper2.MakeHtmlBody()
 
 	// 4. 메일 보내기
-	subscribers := aws.GetSubscribers()
-	sendMailResult := aws.SendMail(contents, subscribers)
+	subscribers := aws2.GetSubscribers()
+	sendMailResult := aws2.SendMail(contents, subscribers)
 
 	return sendMailResult
 }
@@ -35,12 +35,12 @@ func jobscrapping() string {
 func scraping() (*[]kakaoJob, *[]lineJob) {
 	// 카카오
 	kakaoC := make(chan []kakaoJob)
-	go jobscrapper.KakaoCrawling(kakaoC)
+	go jobscrapper2.KakaoCrawling(kakaoC)
 	kakaoJobs := <-kakaoC
 	fmt.Println(kakaoJobs)
 	// 라인
 	lineC := make(chan []lineJob)
-	go jobscrapper.LineCrawling(lineC)
+	go jobscrapper2.LineCrawling(lineC)
 	lineJobs := <-lineC
 	fmt.Println(lineJobs)
 
@@ -49,7 +49,7 @@ func scraping() (*[]kakaoJob, *[]lineJob) {
 
 func saveDB(kakaoJobs *[]kakaoJob, lineJobs *[]lineJob) {
 	// 카카오
-	aws.CheckAndSaveJobForKakao(kakaoJobs)
+	aws2.CheckAndSaveJobForKakao(kakaoJobs)
 	// 라인
-	aws.CheckAndSaveJobForLine(lineJobs)
+	aws2.CheckAndSaveJobForLine(lineJobs)
 }
