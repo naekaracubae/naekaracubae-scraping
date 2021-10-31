@@ -65,6 +65,7 @@ func Test_SaveJobForLine(t *testing.T) {
 	}
 }
 
+// TODO: 실제 db에 집어넣어 버리는데, 테스트 db 적용하고 테스트 후에는 데이터 삭제하는 코드추가
 func Test_CheckAndSaveJobForLine(t *testing.T) {
 
 	lineC := make(chan []lineJob)
