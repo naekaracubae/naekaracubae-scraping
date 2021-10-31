@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
+	"time"
 )
 
 const (
@@ -13,14 +14,14 @@ const (
 	// This address must be verified with Amazon SES.
 	Sender = "noreply@msyhu.com"
 
-	// The subject line for the email.
-	Subject = "오늘의 채용정보입니다👶"
-
 	// The character encoding for the email.
 	CharSet = "UTF-8"
 )
 
 func SendMail(contents *string) string {
+	// The subject line for the email.
+	var today = time.Now().Format("2006-01-02")
+	Subject := "[네,카라쿠배] " + today + " 자 개발자 채용 일보📰 가 도착했습니다!"
 
 	subscribers := GetSubscribers()
 
