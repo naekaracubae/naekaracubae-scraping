@@ -26,7 +26,8 @@ func jobscrapping() string {
 	contents := jobscrapper.MakeHtmlBody()
 
 	// 4. 메일 보내기
-	sendMailResult := aws.SendMail(contents)
+	subscribers := aws.GetSubscribers()
+	sendMailResult := aws.SendMail(contents, subscribers)
 
 	return sendMailResult
 }
