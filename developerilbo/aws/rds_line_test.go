@@ -5,7 +5,9 @@ import (
 	"fmt"
 	aws2 "github.com/msyhu/naekaracubae-scraping/developerilbo/aws"
 	etc2 "github.com/msyhu/naekaracubae-scraping/developerilbo/etc"
+	"github.com/msyhu/naekaracubae-scraping/developerilbo/jobscrapper"
 	_struct2 "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
+	"log"
 	"testing"
 )
 
@@ -61,4 +63,15 @@ func Test_SaveJobForLine(t *testing.T) {
 	if result != true {
 		t.Error("Wrong result")
 	}
+}
+
+func Test_CheckAndSaveJobForLine(t *testing.T) {
+
+	lineC := make(chan []lineJob)
+	go jobscrapper.LineCrawling(lineC)
+	lineJobs := <-lineC
+	log.Println(lineJobs)
+
+	aws2.CheckAndSaveJobForLine(&lineJobs)
+
 }
