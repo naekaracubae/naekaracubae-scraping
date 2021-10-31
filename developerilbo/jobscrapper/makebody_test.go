@@ -9,5 +9,5 @@ import (
 func TestMakeHtmlBody(t *testing.T) {
 	contents := jobscrapper2.MakeHtmlBody()
 
-	fmt.Println(contents)
+	fmt.Println(*contents)
 }

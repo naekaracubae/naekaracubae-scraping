@@ -5,28 +5,24 @@ import (
 	"fmt"
 	aws2 "github.com/msyhu/naekaracubae-scraping/developerilbo/aws"
 	etc2 "github.com/msyhu/naekaracubae-scraping/developerilbo/etc"
+	"github.com/msyhu/naekaracubae-scraping/developerilbo/jobscrapper"
 	_struct2 "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
+	"log"
 	"testing"
 )
 
-type kakaoJob = _struct2.Kakao
+type lineJob = _struct2.Line
 
-func TestGetSubscribers(t *testing.T) {
-	subscribers := aws2.GetSubscribers()
-	fmt.Println(subscribers)
-}
-
-var testKakaoStruct = kakaoJob{
-	Title:    "test",
+var testLineStruct = lineJob{
+	Title:    "Global E-Commerce 경력채용",
 	EndDate:  "채용시까지",
-	Location: "판교",
-	Company:  "kakao",
-	Url:      "https://careers.kakao.com/jobs/P-9349?part=TECHNOLOGY&company=ALL",
-	JobType:  "정규직",
-	Id:       "P-9349",
+	Location: "Bundang",
+	Company:  "LINE PlusDesign",
+	Url:      "https://careers.linecorp.com/ko/jobs/862",
+	Id:       "862",
 }
 
-func TestIsJobExist(t *testing.T) {
+func Test_IsJobExistForLine(t *testing.T) {
 
 	gobbyRdsSecret := aws2.GetSecret()
 
@@ -41,14 +37,14 @@ func TestIsJobExist(t *testing.T) {
 	etc2.CheckErr(err)
 	defer db.Close()
 
-	result := aws2.IsJobExist(&testKakaoStruct, db)
+	result := aws2.IsJobExistForLine(&testLineStruct, db)
 
 	if result != true {
 		t.Error("Wrong result")
 	}
 }
 
-func TestSaveJob(t *testing.T) {
+func Test_SaveJobForLine(t *testing.T) {
 	gobbyRdsSecret := aws2.GetSecret()
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
@@ -62,18 +58,21 @@ func TestSaveJob(t *testing.T) {
 	etc2.CheckErr(err)
 	defer db.Close()
 
-	result := aws2.SaveJob(&testKakaoStruct, db)
+	result := aws2.SaveJobForLine(&testLineStruct, db)
 
 	if result != true {
 		t.Error("Wrong result")
 	}
 }
 
-func TestGetSecret(t *testing.T) {
-	gobbyRdsSecret := aws2.GetSecret()
-	fmt.Println(gobbyRdsSecret)
+// TODO: 실제 db에 집어넣어 버리는데, 테스트 db 적용하고 테스트 후에는 데이터 삭제하는 코드추가
+func Test_CheckAndSaveJobForLine(t *testing.T) {
 
-	if gobbyRdsSecret == nil {
-		t.Error("Wrong result")
-	}
+	lineC := make(chan []lineJob)
+	go jobscrapper.LineCrawling(lineC)
+	lineJobs := <-lineC
+	log.Println(lineJobs)
+
+	aws2.CheckAndSaveJobForLine(&lineJobs)
+
 }
