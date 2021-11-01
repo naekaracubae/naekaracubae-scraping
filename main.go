@@ -12,6 +12,7 @@ type lineJob = _struct.Line
 
 func main() {
 	jobscrapping()
+	//lambda.Start(jobscrapping)
 }
 
 // TODO: 회사마다 크롤링, db저장, body 만들기 메서드를 따로 만들어 주었다. 추상화해서 하나로 합칠 수 없을까?
