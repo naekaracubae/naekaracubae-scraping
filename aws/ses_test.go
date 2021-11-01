@@ -1,13 +1,13 @@
 package aws_test
 
 import (
-	aws2 "github.com/msyhu/naekaracubae-scraping/developerilbo/aws"
-	"github.com/msyhu/naekaracubae-scraping/developerilbo/jobscrapper"
-	_struct2 "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
+	aws2 "github.com/msyhu/naekaracubae-scraping/aws"
+	"github.com/msyhu/naekaracubae-scraping/jobscrapper"
+	_struct2 "github.com/msyhu/naekaracubae-scraping/struct"
 	"testing"
 )
 
-func TestSendmail(t *testing.T) {
+func Test_Sendmail(t *testing.T) {
 	contents := jobscrapper.MakeHtmlBody()
 	subscriber := _struct2.Subscriber{"msyhu", "msyhu@korea.ac.kr"}
 	var subscribers []_struct2.Subscriber

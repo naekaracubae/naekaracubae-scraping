@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	etc2 "github.com/msyhu/naekaracubae-scraping/developerilbo/etc"
-	_struct2 "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
+	etc2 "github.com/msyhu/naekaracubae-scraping/etc"
+	_struct2 "github.com/msyhu/naekaracubae-scraping/struct"
 	"log"
 	"time"
 )
