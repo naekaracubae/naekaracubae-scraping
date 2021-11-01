@@ -6,7 +6,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
-	_struct2 "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
+	_struct2 "github.com/msyhu/naekaracubae-scraping/struct"
+	"time"
 )
 
 const (
@@ -14,14 +15,14 @@ const (
 	// This address must be verified with Amazon SES.
 	Sender = "noreply@msyhu.com"
 
-	// The subject line for the email.
-	Subject = "오늘의 채용정보입니다👶"
-
 	// The character encoding for the email.
 	CharSet = "UTF-8"
 )
 
 func SendMail(contents *string, subscribers []_struct2.Subscriber) string {
+	// The subject line for the email.
+	var today = time.Now().Format("2006-01-02")
+	Subject := "[네,카라쿠배] " + today + " 개발자 채용 일보가 도착했습니다!👩‍💻"
 
 	// Create a new session in the us-west-2 region.
 	// Replace us-west-2 with the AWS Region you're using for Amazon SES.

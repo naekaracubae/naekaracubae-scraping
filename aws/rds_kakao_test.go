@@ -3,18 +3,13 @@ package aws_test
 import (
 	"database/sql"
 	"fmt"
-	aws2 "github.com/msyhu/naekaracubae-scraping/developerilbo/aws"
-	etc2 "github.com/msyhu/naekaracubae-scraping/developerilbo/etc"
-	_struct2 "github.com/msyhu/naekaracubae-scraping/developerilbo/struct"
+	"github.com/msyhu/naekaracubae-scraping/aws"
+	etc2 "github.com/msyhu/naekaracubae-scraping/etc"
+	_struct2 "github.com/msyhu/naekaracubae-scraping/struct"
 	"testing"
 )
 
 type kakaoJob = _struct2.Kakao
-
-func TestGetSubscribers(t *testing.T) {
-	subscribers := aws2.GetSubscribers()
-	fmt.Println(subscribers)
-}
 
 var testKakaoStruct = kakaoJob{
 	Title:    "test",
@@ -26,30 +21,9 @@ var testKakaoStruct = kakaoJob{
 	Id:       "P-9349",
 }
 
-func TestIsJobExist(t *testing.T) {
+func Test_IsJobExistForKakao(t *testing.T) {
 
-	gobbyRdsSecret := aws2.GetSecret()
-
-	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
-		gobbyRdsSecret.User,
-		gobbyRdsSecret.Password,
-		gobbyRdsSecret.Host,
-		gobbyRdsSecret.Database)
-
-	// Initialize connection object.
-	db, err := sql.Open("mysql", connectionString)
-	etc2.CheckErr(err)
-	defer db.Close()
-
-	result := aws2.IsJobExist(&testKakaoStruct, db)
-
-	if result != true {
-		t.Error("Wrong result")
-	}
-}
-
-func TestSaveJob(t *testing.T) {
-	gobbyRdsSecret := aws2.GetSecret()
+	gobbyRdsSecret := aws.GetSecret()
 
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
 		gobbyRdsSecret.User,
@@ -62,18 +36,30 @@ func TestSaveJob(t *testing.T) {
 	etc2.CheckErr(err)
 	defer db.Close()
 
-	result := aws2.SaveJob(&testKakaoStruct, db)
+	result := aws.IsJobExistForKakao(&testKakaoStruct, db)
 
 	if result != true {
 		t.Error("Wrong result")
 	}
 }
 
-func TestGetSecret(t *testing.T) {
-	gobbyRdsSecret := aws2.GetSecret()
-	fmt.Println(gobbyRdsSecret)
+func Test_SaveJobForKakao(t *testing.T) {
+	gobbyRdsSecret := aws.GetSecret()
 
-	if gobbyRdsSecret == nil {
+	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true",
+		gobbyRdsSecret.User,
+		gobbyRdsSecret.Password,
+		gobbyRdsSecret.Host,
+		gobbyRdsSecret.Database)
+
+	// Initialize connection object.
+	db, err := sql.Open("mysql", connectionString)
+	etc2.CheckErr(err)
+	defer db.Close()
+
+	result := aws.SaveJobForKakao(&testKakaoStruct, db)
+
+	if result != true {
 		t.Error("Wrong result")
 	}
 }

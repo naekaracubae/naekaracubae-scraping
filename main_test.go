@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/msyhu/naekaracubae-scraping/developerilbo/jobscrapper"
+	jobscrapper2 "github.com/msyhu/naekaracubae-scraping/jobscrapper"
 	"log"
 	"testing"
 )
@@ -11,8 +11,8 @@ func Test_전체_회사_스크래핑(t *testing.T) {
 
 	kakaoC := make(chan []kakaoJob)
 	lineC := make(chan []lineJob)
-	go jobscrapper.LineCrawling(lineC)
-	go jobscrapper.KakaoCrawling(kakaoC)
+	go jobscrapper2.LineCrawling(lineC)
+	go jobscrapper2.KakaoCrawling(kakaoC)
 	kakaoJobs := <-kakaoC
 	lineJobs := <-lineC
 
