@@ -98,8 +98,8 @@ func GetSubscribers() []_struct2.Subscriber {
 	etc2.CheckErr(err)
 	defer db.Close()
 
-	query := "SELECT name, email from subscribers;"
-	//query := "SELECT name, email from test_subscribers;"
+	//query := "SELECT name, email from subscribers;"
+	query := "SELECT name, email from test_subscribers;"
 
 	rows, err := db.Query(query)
 	etc2.CheckErr(err)
