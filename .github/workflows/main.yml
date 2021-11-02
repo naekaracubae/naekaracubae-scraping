@@ -3,8 +3,7 @@ name: Deploy naekaracubae-scraping
 on:
   push:
     branches:
-      - main
-      - develop
+      - featuer/deploy_lambda
   pull_request:
     branches:
       - main
