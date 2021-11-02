@@ -14,16 +14,13 @@ jobs:
   deploy_zip:
     name: deploy lambda function from zip
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go-version: 1.16.4
     steps:
       - name: checkout source code
         uses: actions/checkout@v1
       - name: Install Go
         uses: actions/setup-go@v1
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version: 1.16.4
       - name: Build binary
         run: |
           GOOS=linux go build -v -a -o main main.go && zip naekaracubae-scraping.zip main
