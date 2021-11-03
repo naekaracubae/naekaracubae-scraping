@@ -10,8 +10,10 @@ import (
 func Test_Sendmail(t *testing.T) {
 	contents := jobscrapper.MakeHtmlBody()
 	subscriber := _struct2.Subscriber{"msyhu", "msyhu@korea.ac.kr"}
+	subscriber2 := _struct2.Subscriber{"msyhu2", "anstkd07@gmail.com"}
 	var subscribers []_struct2.Subscriber
 	subscribers = append(subscribers, subscriber)
+	subscribers = append(subscribers, subscriber2)
 
 	aws2.SendMail(contents, subscribers)
 }
